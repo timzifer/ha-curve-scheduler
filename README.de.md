@@ -1,6 +1,6 @@
 # Curve Scheduler – Tagesverläufe für Sollwerte in Home Assistant
 
-🇬🇧 [English version](README.md)
+🇬🇧 [English version](https://github.com/timzifer/ha-curve-scheduler/blob/main/README.md)
 
 **Curve Scheduler** berechnet einen Wert, der sich über den Tag verändert, und
 schreibt ihn regelmäßig in ein Gerät. Typisch ist die Soll-Temperatur einer
@@ -18,8 +18,8 @@ bearbeiten**, am Handy oder am PC, ohne YAML, Automationen,
 Entwicklerwerkzeuge oder Admin-Rechte.
 
 <p align="center">
-  <img src="docs/images/today.png" width="420" alt="Karte: Heute">
-  <img src="docs/images/today-dark-mobile.png" width="260" alt="Karte am Handy, dunkles Design">
+  <img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/today.png" width="420" alt="Karte: Heute">
+  <img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/today-dark-mobile.png" width="260" alt="Karte am Handy, dunkles Design">
 </p>
 
 ## Funktionen
@@ -86,7 +86,7 @@ Dashboard bearbeiten → **Karte hinzufügen** → **Curve Scheduler**. In den K
 
 ### Heute
 
-<img src="docs/images/today.png" width="420" align="right" alt="Ansicht Heute">
+<img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/today.png" width="420" align="right" alt="Ansicht Heute">
 
 Das Diagramm zeigt den heutigen Verlauf, die rote Linie die aktuelle Uhrzeit.
 Darüber steht eine Zusammenfassung, z. B.
@@ -101,8 +101,8 @@ Darüber steht eine Zusammenfassung, z. B.
 ### Tagespläne
 
 <p>
-  <img src="docs/images/editor-profiles.png" width="420" alt="Tagesplan-Editor">
-  <img src="docs/images/editor-profiles-mobile.png" width="260" alt="Tagesplan-Editor am Handy">
+  <img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/editor-profiles.png" width="420" alt="Tagesplan-Editor">
+  <img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/editor-profiles-mobile.png" width="260" alt="Tagesplan-Editor am Handy">
 </p>
 
 - Oben den Plan wählen. **+ Neuer Plan**, umbenennen, Farbe wählen, **Duplizieren** oder **Plan löschen**.
@@ -116,7 +116,7 @@ Darüber steht eine Zusammenfassung, z. B.
 
 ### Wochenplan
 
-<img src="docs/images/editor-week.png" width="420" alt="Wochenplan">
+<img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/editor-week.png" width="420" alt="Wochenplan">
 
 Für jeden Wochentag und für Feiertage einen Plan wählen. Die Monatsübersicht
 zeigt, welcher Plan an welchem Tag gilt, inklusive Feiertagen (★) und
@@ -124,7 +124,7 @@ Ausnahmen (✈).
 
 ### Urlaub & Ausnahmen
 
-<img src="docs/images/editor-exceptions.png" width="420" alt="Ausnahmen">
+<img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/editor-exceptions.png" width="420" alt="Ausnahmen">
 
 Jede Ausnahme hat einen Zeitraum, einen Plan und eine Notiz. Vergangene
 Einträge werden ausgegraut und lassen sich mit einem Tipp oder automatisch
@@ -195,7 +195,7 @@ aktivieren (Automation mit der Aktion `curve_scheduler.set_override`).
 
 ## Entwicklung
 
-Siehe [README.md](README.md#development) und [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md).
+Siehe [README.md](https://github.com/timzifer/ha-curve-scheduler/blob/main/README.md#development) und [docs/ACCEPTANCE.md](https://github.com/timzifer/ha-curve-scheduler/blob/main/docs/ACCEPTANCE.md).
 
 ## Releases
 

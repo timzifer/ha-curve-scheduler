@@ -4,7 +4,7 @@
 [![CI](https://github.com/timzifer/ha-curve-scheduler/actions/workflows/ci.yml/badge.svg)](https://github.com/timzifer/ha-curve-scheduler/actions/workflows/ci.yml)
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/docs/faq/custom_repositories)
 
-🇩🇪 [Deutsche Anleitung](README.de.md)
+🇩🇪 [Deutsche Anleitung](https://github.com/timzifer/ha-curve-scheduler/blob/main/README.de.md)
 
 **Curve Scheduler** calculates a value that changes over the day and writes it to a
 device at regular intervals. The typical use is the hot water circulation
@@ -20,8 +20,8 @@ plan, a holiday calendar or date-range exceptions.
 or the desktop, without YAML, automations, developer tools or admin rights.
 
 <p align="center">
-  <img src="docs/images/today.png" width="420" alt="Card: today's plan">
-  <img src="docs/images/today-dark-mobile.png" width="260" alt="Card on a phone, dark theme">
+  <img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/today.png" width="420" alt="Card: today's plan">
+  <img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/today-dark-mobile.png" width="260" alt="Card on a phone, dark theme">
 </p>
 
 ## Features
@@ -88,7 +88,7 @@ Edit a dashboard → **Add card** → **Curve Scheduler**. In the card settings 
 
 ### Today
 
-<img src="docs/images/today.png" width="420" align="right" alt="Today view">
+<img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/today.png" width="420" align="right" alt="Today view">
 
 The chart shows today's curve. The red line marks the current time. The text
 line summarizes the day, e.g.
@@ -103,8 +103,8 @@ line summarizes the day, e.g.
 ### Daily plans
 
 <p>
-  <img src="docs/images/editor-profiles.png" width="420" alt="Daily plan editor">
-  <img src="docs/images/editor-profiles-mobile.png" width="260" alt="Daily plan editor on a phone">
+  <img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/editor-profiles.png" width="420" alt="Daily plan editor">
+  <img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/editor-profiles-mobile.png" width="260" alt="Daily plan editor on a phone">
 </p>
 
 - Choose the plan at the top. **+ New plan**, rename, pick a color, **Duplicate** or **Delete plan**.
@@ -118,14 +118,14 @@ line summarizes the day, e.g.
 
 ### Weekly plan
 
-<img src="docs/images/editor-week.png" width="420" alt="Weekly plan">
+<img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/editor-week.png" width="420" alt="Weekly plan">
 
 Choose a plan for each weekday and for holidays. The month overview shows
 which plan applies on which day, holidays (★) and exceptions (✈) included.
 
 ### Holidays & exceptions
 
-<img src="docs/images/editor-exceptions.png" width="420" alt="Exceptions">
+<img src="https://raw.githubusercontent.com/timzifer/ha-curve-scheduler/main/docs/images/editor-exceptions.png" width="420" alt="Exceptions">
 
 Each exception has a date range, a plan and a note. Past entries are grayed
 out; they can be removed with one tap or automatically.
@@ -240,7 +240,7 @@ python scripts/generate_vectors.py
 
 The repository contains a devcontainer. `scripts/develop` starts a local Home
 Assistant with the integration on port 8123 (see `config/configuration.yaml`).
-[docs/ACCEPTANCE.md](docs/ACCEPTANCE.md) documents the acceptance test.
+[docs/ACCEPTANCE.md](https://github.com/timzifer/ha-curve-scheduler/blob/main/docs/ACCEPTANCE.md) documents the acceptance test.
 
 ### Releases
 
