@@ -1,6 +1,6 @@
 /**
  * Schedule data model, validation and day resolution.
- * Mirror of custom_components/zeitprofil/model.py (same error codes).
+ * Mirror of custom_components/curve_scheduler/model.py (same error codes).
  */
 
 import { buildTimeline, parseTime, formatTime, type Mode, type Point } from "./interpolation";
@@ -316,7 +316,7 @@ export function newProfileId(data: Schedule, name: string): string {
       .replace(/ß/g, "ss")
       .replace(/[^a-z0-9]+/g, "_")
       .replace(/^_+|_+$/g, "")
-      .slice(0, 30) || "profil";
+      .slice(0, 30) || "profile";
   let id = base;
   let counter = 2;
   while (id in data.profiles) {

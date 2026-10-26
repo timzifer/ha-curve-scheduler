@@ -8,27 +8,27 @@ from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import dt as dt_util
 
-from . import ZeitprofilConfigEntry
+from . import CurveSchedulerConfigEntry
 from .const import DOMAIN, MODE_AUTO
-from .entity import ZeitprofilEntity
-from .runtime import ZeitprofilRuntime
+from .entity import CurveSchedulerEntity
+from .runtime import CurveSchedulerRuntime
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ZeitprofilConfigEntry,
+    entry: CurveSchedulerConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up the select."""
     async_add_entities([ModeSelect(entry.runtime_data)])
 
 
-class ModeSelect(ZeitprofilEntity, SelectEntity):
+class ModeSelect(CurveSchedulerEntity, SelectEntity):
     """``auto`` (shown as "Automatik") or the name of a profile."""
 
-    def __init__(self, runtime: ZeitprofilRuntime) -> None:
+    def __init__(self, runtime: CurveSchedulerRuntime) -> None:
         """Initialize the select."""
-        super().__init__(runtime, "mode", "modus", "select")
+        super().__init__(runtime, "mode", "mode", "select")
 
     @property
     def options(self) -> list[str]:

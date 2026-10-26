@@ -1,4 +1,4 @@
-"""Runtime of one Zeitprofil instance: computing and writing the setpoint."""
+"""Runtime of one Curve Scheduler instance: computing and writing the setpoint."""
 
 from __future__ import annotations
 
@@ -102,7 +102,7 @@ def local_datetime(day: date, minutes: float) -> datetime:
     )
 
 
-class ZeitprofilRuntime:
+class CurveSchedulerRuntime:
     """Holds the schedule of one config entry and drives the target entity."""
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, store: ScheduleStore) -> None:

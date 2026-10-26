@@ -35,10 +35,10 @@ export type SaveResult =
   | { ok: false; conflict: false; errors: ValidationIssue[] };
 
 export const listInstances = (hass: HomeAssistant): Promise<InstanceSummary[]> =>
-  hass.callWS({ type: "zeitprofil/list" });
+  hass.callWS({ type: "curve_scheduler/list" });
 
 export const getInstance = (hass: HomeAssistant, entryId: string): Promise<InstanceData> =>
-  hass.callWS({ type: "zeitprofil/get", entry_id: entryId });
+  hass.callWS({ type: "curve_scheduler/get", entry_id: entryId });
 
 export const saveSchedule = (
   hass: HomeAssistant,
@@ -46,7 +46,7 @@ export const saveSchedule = (
   revision: number,
   schedule: Schedule,
 ): Promise<SaveResult> =>
-  hass.callWS({ type: "zeitprofil/save", entry_id: entryId, revision, schedule });
+  hass.callWS({ type: "curve_scheduler/save", entry_id: entryId, revision, schedule });
 
 export const subscribeInstance = (
   hass: HomeAssistant,
@@ -54,7 +54,7 @@ export const subscribeInstance = (
   callback: (data: InstanceData) => void,
 ): Promise<() => Promise<void>> =>
   hass.connection.subscribeMessage<InstanceData>(callback, {
-    type: "zeitprofil/subscribe",
+    type: "curve_scheduler/subscribe",
     entry_id: entryId,
   });
 
@@ -64,7 +64,7 @@ export const fetchHolidays = (
   start: string,
   end: string,
 ): Promise<{ configured: boolean; holidays: string[] }> =>
-  hass.callWS({ type: "zeitprofil/holidays", entry_id: entryId, start, end });
+  hass.callWS({ type: "curve_scheduler/holidays", entry_id: entryId, start, end });
 
 export const setMode = (
   hass: HomeAssistant,
@@ -72,8 +72,8 @@ export const setMode = (
   profileId: string | null,
 ): Promise<unknown> =>
   profileId === null
-    ? hass.callService("zeitprofil", "clear_override", { config_entry_id: entryId })
-    : hass.callService("zeitprofil", "set_override", {
+    ? hass.callService("curve_scheduler", "clear_override", { config_entry_id: entryId })
+    : hass.callService("curve_scheduler", "set_override", {
         config_entry_id: entryId,
         profile: profileId,
       });
@@ -86,7 +86,7 @@ export const addException = (
   profileId: string,
   note: string,
 ): Promise<unknown> =>
-  hass.callService("zeitprofil", "add_exception", {
+  hass.callService("curve_scheduler", "add_exception", {
     config_entry_id: entryId,
     from,
     to,

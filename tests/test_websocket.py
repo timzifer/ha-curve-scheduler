@@ -34,30 +34,30 @@ async def client(
 
 
 async def test_list_and_get(hass: HomeAssistant, entry: Any, client: Any) -> None:
-    await client.send_json_auto_id({"type": "zeitprofil/list"})
+    await client.send_json_auto_id({"type": "curve_scheduler/list"})
     msg = await client.receive_json()
     assert msg["success"]
     assert msg["result"][0]["entry_id"] == entry.entry_id
     assert msg["result"][0]["config"]["max"] == 70
 
-    await client.send_json_auto_id({"type": "zeitprofil/get", "entry_id": entry.entry_id})
+    await client.send_json_auto_id({"type": "curve_scheduler/get", "entry_id": entry.entry_id})
     msg = await client.receive_json()
     result = msg["result"]
     assert result["revision"] == 1
-    assert set(result["schedule"]["profiles"]) == {"werktag", "frei"}
+    assert set(result["schedule"]["profiles"]) == {"workday", "day_off"}
     assert result["state"]["value"] == 45
     assert result["state"]["next_point"]["hhmm"] == "17:00"
     assert [d["profile_id"] for d in result["state"]["timeline"]] == [
-        "werktag",
-        "werktag",
-        "werktag",
-        "werktag",
-        "frei",
+        "workday",
+        "workday",
+        "workday",
+        "workday",
+        "day_off",
     ]
 
 
 async def test_unknown_entry(hass: HomeAssistant, entry: Any, client: Any) -> None:
-    await client.send_json_auto_id({"type": "zeitprofil/get", "entry_id": "nope"})
+    await client.send_json_auto_id({"type": "curve_scheduler/get", "entry_id": "nope"})
     msg = await client.receive_json()
     assert not msg["success"]
     assert msg["error"]["code"] == "not_found"
@@ -67,11 +67,11 @@ async def test_unknown_entry(hass: HomeAssistant, entry: Any, client: Any) -> No
 async def test_non_admin_can_save(hass: HomeAssistant, entry: Any, client: Any) -> None:
     schedule = copy.deepcopy(entry.runtime_data.schedule_dict())
     # Change today's profile at the current time: written immediately.
-    schedule["profiles"]["werktag"]["points"] = [{"t": "11:00", "v": 52.5}]
-    schedule["week"]["sat"] = "werktag"
+    schedule["profiles"]["workday"]["points"] = [{"t": "11:00", "v": 52.5}]
+    schedule["week"]["sat"] = "workday"
     await client.send_json_auto_id(
         {
-            "type": "zeitprofil/save",
+            "type": "curve_scheduler/save",
             "entry_id": entry.entry_id,
             "revision": 1,
             "schedule": schedule,
@@ -81,17 +81,27 @@ async def test_non_admin_can_save(hass: HomeAssistant, entry: Any, client: Any) 
     assert msg["success"]
     assert msg["result"] == {"ok": True, "revision": 2}
     assert float(hass.states.get(TARGET).state) == 52.5
-    assert entry.runtime_data.data["week"]["sat"] == "werktag"
+    assert entry.runtime_data.data["week"]["sat"] == "workday"
 
 
 async def test_save_conflict(hass: HomeAssistant, entry: Any, client: Any) -> None:
     schedule = entry.runtime_data.schedule_dict()
     await client.send_json_auto_id(
-        {"type": "zeitprofil/save", "entry_id": entry.entry_id, "revision": 1, "schedule": schedule}
+        {
+            "type": "curve_scheduler/save",
+            "entry_id": entry.entry_id,
+            "revision": 1,
+            "schedule": schedule,
+        }
     )
     assert (await client.receive_json())["result"]["ok"]
     await client.send_json_auto_id(
-        {"type": "zeitprofil/save", "entry_id": entry.entry_id, "revision": 1, "schedule": schedule}
+        {
+            "type": "curve_scheduler/save",
+            "entry_id": entry.entry_id,
+            "revision": 1,
+            "schedule": schedule,
+        }
     )
     result = (await client.receive_json())["result"]
     assert result == {"ok": False, "conflict": True, "revision": 2}
@@ -99,10 +109,15 @@ async def test_save_conflict(hass: HomeAssistant, entry: Any, client: Any) -> No
 
 async def test_save_validation(hass: HomeAssistant, entry: Any, client: Any) -> None:
     schedule = copy.deepcopy(entry.runtime_data.schedule_dict())
-    schedule["profiles"]["werktag"]["points"].append({"t": "23:03", "v": 99})
-    del schedule["profiles"]["frei"]
+    schedule["profiles"]["workday"]["points"].append({"t": "23:03", "v": 99})
+    del schedule["profiles"]["day_off"]
     await client.send_json_auto_id(
-        {"type": "zeitprofil/save", "entry_id": entry.entry_id, "revision": 1, "schedule": schedule}
+        {
+            "type": "curve_scheduler/save",
+            "entry_id": entry.entry_id,
+            "revision": 1,
+            "schedule": schedule,
+        }
     )
     result = (await client.receive_json())["result"]
     assert result["ok"] is False
@@ -114,14 +129,16 @@ async def test_save_validation(hass: HomeAssistant, entry: Any, client: Any) -> 
 
 
 async def test_subscribe_receives_updates(hass: HomeAssistant, entry: Any, client: Any) -> None:
-    await client.send_json_auto_id({"type": "zeitprofil/subscribe", "entry_id": entry.entry_id})
+    await client.send_json_auto_id(
+        {"type": "curve_scheduler/subscribe", "entry_id": entry.entry_id}
+    )
     msg = await client.receive_json()
     assert msg["success"]
     event = await client.receive_json()
     assert event["event"]["revision"] == 1
 
     await hass.services.async_call(
-        "switch", "turn_off", {"entity_id": "switch.zirkulation_aktiv"}, blocking=True
+        "switch", "turn_off", {"entity_id": "switch.zirkulation_active"}, blocking=True
     )
     event = await client.receive_json()
     assert event["event"]["state"]["enabled"] is False
@@ -132,7 +149,7 @@ async def test_subscribe_receives_updates(hass: HomeAssistant, entry: Any, clien
 
 async def test_preview(hass: HomeAssistant, entry: Any, client: Any) -> None:
     await client.send_json_auto_id(
-        {"type": "zeitprofil/preview", "entry_id": entry.entry_id, "step_minutes": 60}
+        {"type": "curve_scheduler/preview", "entry_id": entry.entry_id, "step_minutes": 60}
     )
     result = (await client.receive_json())["result"]
     assert result["ok"]
@@ -141,10 +158,10 @@ async def test_preview(hass: HomeAssistant, entry: Any, client: Any) -> None:
     assert result["curve"][12] == [720.0, 45.0]
 
     schedule = copy.deepcopy(entry.runtime_data.schedule_dict())
-    schedule["profiles"]["werktag"]["points"] = [{"t": "00:00", "v": 30}]
+    schedule["profiles"]["workday"]["points"] = [{"t": "00:00", "v": 30}]
     await client.send_json_auto_id(
         {
-            "type": "zeitprofil/preview",
+            "type": "curve_scheduler/preview",
             "entry_id": entry.entry_id,
             "date": "2026-10-28",
             "schedule": schedule,
@@ -154,9 +171,9 @@ async def test_preview(hass: HomeAssistant, entry: Any, client: Any) -> None:
     result = (await client.receive_json())["result"]
     assert result["curve"][12] == [720.0, 30.0]
 
-    schedule["profiles"]["werktag"]["points"] = []
+    schedule["profiles"]["workday"]["points"] = []
     await client.send_json_auto_id(
-        {"type": "zeitprofil/preview", "entry_id": entry.entry_id, "schedule": schedule}
+        {"type": "curve_scheduler/preview", "entry_id": entry.entry_id, "schedule": schedule}
     )
     result = (await client.receive_json())["result"]
     assert result["ok"] is False
@@ -165,7 +182,7 @@ async def test_preview(hass: HomeAssistant, entry: Any, client: Any) -> None:
 async def test_holidays_without_source(hass: HomeAssistant, entry: Any, client: Any) -> None:
     await client.send_json_auto_id(
         {
-            "type": "zeitprofil/holidays",
+            "type": "curve_scheduler/holidays",
             "entry_id": entry.entry_id,
             "start": "2026-10-01",
             "end": "2026-10-31",
@@ -179,7 +196,7 @@ async def test_non_admin_can_call_services(hass: HomeAssistant, entry: Any, clie
     await client.send_json_auto_id(
         {
             "type": "call_service",
-            "domain": "zeitprofil",
+            "domain": "curve_scheduler",
             "service": "add_exception",
             "service_data": {
                 "config_entry_id": entry.entry_id,

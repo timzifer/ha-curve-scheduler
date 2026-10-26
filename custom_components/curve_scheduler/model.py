@@ -84,7 +84,7 @@ def default_schedule(minimum: float, maximum: float, step: float, language: str)
     german = language.lower().startswith("de")
     return {
         "profiles": {
-            "werktag": {
+            "workday": {
                 "name": "Werktag" if german else "Workday",
                 "color": DEFAULT_COLORS[0],
                 "points": [
@@ -98,7 +98,7 @@ def default_schedule(minimum: float, maximum: float, step: float, language: str)
                     {"t": "22:00", "v": low},
                 ],
             },
-            "frei": {
+            "day_off": {
                 "name": "Frei" if german else "Day off",
                 "color": DEFAULT_COLORS[1],
                 "points": [
@@ -110,15 +110,15 @@ def default_schedule(minimum: float, maximum: float, step: float, language: str)
             },
         },
         "week": {
-            "mon": "werktag",
-            "tue": "werktag",
-            "wed": "werktag",
-            "thu": "werktag",
-            "fri": "werktag",
-            "sat": "frei",
-            "sun": "frei",
+            "mon": "workday",
+            "tue": "workday",
+            "wed": "workday",
+            "thu": "workday",
+            "fri": "workday",
+            "sat": "day_off",
+            "sun": "day_off",
         },
-        "holiday_profile": "frei",
+        "holiday_profile": "day_off",
         "exceptions": [],
         "auto_cleanup": False,
         "enabled": True,

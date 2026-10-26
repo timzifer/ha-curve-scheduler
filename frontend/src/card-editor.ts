@@ -4,9 +4,9 @@ import { LitElement, css, html, nothing, type PropertyValues } from "lit";
 import { listInstances, type HomeAssistant, type InstanceSummary } from "./api";
 import { languageOf, translator } from "./i18n";
 import { sharedStyles } from "./styles";
-import type { ZeitprofilCardConfig } from "./card";
+import type { CurveSchedulerCardConfig } from "./card";
 
-export class ZeitprofilCardEditor extends LitElement {
+export class CurveSchedulerCardEditor extends LitElement {
   static properties = {
     hass: { attribute: false },
     _config: { state: true },
@@ -14,7 +14,7 @@ export class ZeitprofilCardEditor extends LitElement {
   };
 
   declare hass: HomeAssistant;
-  declare _config: ZeitprofilCardConfig;
+  declare _config: CurveSchedulerCardConfig;
   declare _instances: InstanceSummary[] | null;
 
   constructor() {
@@ -22,7 +22,7 @@ export class ZeitprofilCardEditor extends LitElement {
     this._instances = null;
   }
 
-  setConfig(config: ZeitprofilCardConfig): void {
+  setConfig(config: CurveSchedulerCardConfig): void {
     this._config = config;
   }
 
@@ -40,9 +40,9 @@ export class ZeitprofilCardEditor extends LitElement {
     }
   }
 
-  private update_(patch: Partial<ZeitprofilCardConfig>): void {
+  private update_(patch: Partial<CurveSchedulerCardConfig>): void {
     const config = { ...this._config, ...patch };
-    for (const key of Object.keys(config) as (keyof ZeitprofilCardConfig)[]) {
+    for (const key of Object.keys(config) as (keyof CurveSchedulerCardConfig)[]) {
       if (config[key] === "" || config[key] === undefined) {
         delete config[key];
       }
@@ -125,6 +125,6 @@ export class ZeitprofilCardEditor extends LitElement {
   ];
 }
 
-if (!customElements.get("zeitprofil-card-editor")) {
-  customElements.define("zeitprofil-card-editor", ZeitprofilCardEditor);
+if (!customElements.get("curve-scheduler-card-editor")) {
+  customElements.define("curve-scheduler-card-editor", CurveSchedulerCardEditor);
 }

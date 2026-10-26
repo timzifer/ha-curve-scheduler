@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   release:
-    name: Build and attach zeitprofil.zip
+    name: Build and attach curve_scheduler.zip
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -27,12 +27,12 @@ jobs:
       - name: Set version from tag
         run: |
           version="${GITHUB_REF_NAME#v}"
-          jq --arg v "$version" '.version = $v' custom_components/zeitprofil/manifest.json > manifest.tmp
-          mv manifest.tmp custom_components/zeitprofil/manifest.json
+          jq --arg v "$version" '.version = $v' custom_components/curve_scheduler/manifest.json > manifest.tmp
+          mv manifest.tmp custom_components/curve_scheduler/manifest.json
       - name: Create zip
-        working-directory: custom_components/zeitprofil
-        run: zip -r ../../zeitprofil.zip . -x "__pycache__/*" "*/__pycache__/*"
+        working-directory: custom_components/curve_scheduler
+        run: zip -r ../../curve_scheduler.zip . -x "__pycache__/*" "*/__pycache__/*"
       - name: Attach to release
         uses: softprops/action-gh-release@v2
         with:
-          files: zeitprofil.zip
+          files: curve_scheduler.zip

@@ -22,24 +22,24 @@ async def main(phase):
             await s.post(
                 f"{BASE}/api/services/select/select_option",
                 headers=h,
-                json={"entity_id": "select.zirkulation_modus", "option": "Frei"},
+                json={"entity_id": "select.zirkulation_mode", "option": "Frei"},
             )
             await s.post(
                 f"{BASE}/api/services/switch/turn_off",
                 headers=h,
-                json={"entity_id": "switch.zirkulation_aktiv"},
+                json={"entity_id": "switch.zirkulation_active"},
             )
             await asyncio.sleep(1)
         st = await states(s, h)
         for k in (
-            "select.zirkulation_modus",
-            "switch.zirkulation_aktiv",
-            "sensor.zirkulation_sollwert",
+            "select.zirkulation_mode",
+            "switch.zirkulation_active",
+            "sensor.zirkulation_setpoint",
             "input_number.zirkulation_soll",
         ):
             print(phase, k, st[k]["state"])
         ws = await ws_connect(s, cfg["admin"])
-        data = await ws.call(type="zeitprofil/get", entry_id=cfg["entry_id"])
+        data = await ws.call(type="curve_scheduler/get", entry_id=cfg["entry_id"])
         print(
             phase,
             "revision",
@@ -49,11 +49,11 @@ async def main(phase):
             "exceptions",
             [(e["from"], e["to"]) for e in data["schedule"]["exceptions"]],
             "points",
-            len(data["schedule"]["profiles"]["werktag"]["points"]),
+            len(data["schedule"]["profiles"]["workday"]["points"]),
         )
         if phase == "after":
             prev = await ws.call(
-                type="zeitprofil/preview", entry_id=cfg["entry_id"], step_minutes=1
+                type="curve_scheduler/preview", entry_id=cfg["entry_id"], step_minutes=1
             )
             now = data["state"]["now"]
             m = int(now[11:13]) * 60 + int(now[14:16])

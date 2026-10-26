@@ -66,7 +66,7 @@ describe("interpolation", () => {
     ];
     const fri = buildTimeline([workday, workday, workday, weekend, weekend]);
     const sat = buildTimeline([workday, workday, weekend, weekend, workday]);
-    for (const mode of ["linear", "weich", "kurve"] as const) {
+    for (const mode of ["linear", "smooth", "curve"] as const) {
       expect(interpolate(fri, 1440, mode)).toBeCloseTo(interpolate(sat, 0, mode), 9);
     }
   });

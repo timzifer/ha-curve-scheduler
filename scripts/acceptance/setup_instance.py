@@ -1,4 +1,4 @@
-"""Onboard a fresh HA, create users, set up Zeitprofil and a dashboard."""
+"""Onboard a fresh HA, create users, set up Curve Scheduler and a dashboard."""
 
 import asyncio
 import json
@@ -95,7 +95,7 @@ async def main():
         r = await s.post(
             f"{BASE}/api/config/config_entries/flow",
             headers=h,
-            json={"handler": "zeitprofil", "show_advanced_options": False},
+            json={"handler": "curve_scheduler", "show_advanced_options": False},
         )
         flow = await r.json()
         print("step", flow["step_id"])
@@ -113,7 +113,7 @@ async def main():
             headers=h,
             json={
                 "interval": 5,
-                "interpolation": "kurve",
+                "interpolation": "curve",
                 "min_value": defaults["min_value"],
                 "max_value": defaults["max_value"],
                 "step": 0.5,
@@ -132,7 +132,7 @@ async def main():
                     {
                         "title": "Warmwasser",
                         "path": "ww",
-                        "cards": [{"type": "custom:zeitprofil-card", "entry_id": entry_id}],
+                        "cards": [{"type": "custom:curve-scheduler-card", "entry_id": entry_id}],
                     }
                 ],
             },

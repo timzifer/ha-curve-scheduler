@@ -9,7 +9,7 @@ import random
 
 import pytest
 
-from custom_components.zeitprofil.interpolation import (
+from custom_components.curve_scheduler.interpolation import (
     MODES,
     build_timeline,
     clamp,
@@ -48,18 +48,18 @@ def test_passes_through_points(mode: str) -> None:
 
 def test_step_holds_previous_value() -> None:
     timeline = build_timeline([WORKDAY] * 5)
-    assert interpolate(timeline, 329.9, "stufe") == 45
-    assert interpolate(timeline, 330, "stufe") == 60
+    assert interpolate(timeline, 329.9, "step") == 45
+    assert interpolate(timeline, 330, "step") == 60
     # Before the first point of the day the last value of the previous day applies.
-    assert interpolate(timeline, 100, "stufe") == 60
+    assert interpolate(timeline, 100, "step") == 60
 
 
 def test_linear_and_smooth_midpoints() -> None:
     timeline = build_timeline([WORKDAY] * 5)
     assert interpolate(timeline, 315, "linear") == pytest.approx(52.5)
-    assert interpolate(timeline, 315, "weich") == pytest.approx(52.5)
+    assert interpolate(timeline, 315, "smooth") == pytest.approx(52.5)
     # Smoothstep starts slower than linear.
-    assert interpolate(timeline, 303, "weich") < interpolate(timeline, 303, "linear")
+    assert interpolate(timeline, 303, "smooth") < interpolate(timeline, 303, "linear")
 
 
 @pytest.mark.parametrize("mode", MODES)
@@ -75,7 +75,7 @@ def test_curve_does_not_overshoot() -> None:
     for (x0, y0), (x1, y1) in itertools.pairwise(points):
         low, high = min(y0, y1), max(y0, y1)
         for i in range(1, 50):
-            value = interpolate(timeline, x0 + (x1 - x0) * i / 50, "kurve")
+            value = interpolate(timeline, x0 + (x1 - x0) * i / 50, "curve")
             assert low - 1e-9 <= value <= high + 1e-9
 
 
@@ -84,12 +84,12 @@ def test_curve_is_smooth_at_points() -> None:
     timeline = build_timeline([WORKDAY, WORKDAY, WORKDAY, WEEKEND, WEEKEND])
     eps = 1e-4
     for x, _ in WORKDAY + [(p[0] + 1440, p[1]) for p in WEEKEND[:1]]:
-        left = (interpolate(timeline, x, "kurve") - interpolate(timeline, x - eps, "kurve")) / eps
-        right = (interpolate(timeline, x + eps, "kurve") - interpolate(timeline, x, "kurve")) / eps
+        left = (interpolate(timeline, x, "curve") - interpolate(timeline, x - eps, "curve")) / eps
+        right = (interpolate(timeline, x + eps, "curve") - interpolate(timeline, x, "curve")) / eps
         assert left == pytest.approx(right, abs=1e-3)
 
 
-@pytest.mark.parametrize("mode", ["linear", "weich", "kurve"])
+@pytest.mark.parametrize("mode", ["linear", "smooth", "curve"])
 def test_no_jump_at_midnight_between_profiles(mode: str) -> None:
     """Friday 24:00 equals Saturday 00:00 although the profiles differ."""
     rng = random.Random(42)
@@ -106,7 +106,7 @@ def test_no_jump_at_midnight_between_profiles(mode: str) -> None:
 def test_step_mode_switches_at_first_point_of_next_day() -> None:
     today = build_timeline([WORKDAY, WORKDAY, WORKDAY, WEEKEND, WEEKEND])
     # Until Saturday's first point the last Friday value stays.
-    assert interpolate(today, 1440, "stufe") == 60
+    assert interpolate(today, 1440, "step") == 60
 
 
 def test_evaluate_day_and_helpers() -> None:

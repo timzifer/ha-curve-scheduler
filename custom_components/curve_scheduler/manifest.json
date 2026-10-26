@@ -1,6 +1,6 @@
 {
-  "domain": "zeitprofil",
-  "name": "Zeitprofil",
+  "domain": "curve_scheduler",
+  "name": "Curve Scheduler",
   "codeowners": ["@timzifer"],
   "config_flow": true,
   "dependencies": ["frontend", "http", "websocket_api"],

@@ -15,7 +15,7 @@ http:
 logger:
   default: warning
   logs:
-    custom_components.zeitprofil: debug
+    custom_components.curve_scheduler: debug
 input_number:
   zirkulation_soll:
     name: Zirkulation Soll

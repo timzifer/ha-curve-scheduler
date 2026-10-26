@@ -14,13 +14,13 @@ const language = (navigator.language ?? "en").toLowerCase().startsWith("de") ? "
 const t = translator(language);
 
 window.customCards = window.customCards ?? [];
-if (!window.customCards.some((card) => card.type === "zeitprofil-card")) {
+if (!window.customCards.some((card) => card.type === "curve-scheduler-card")) {
   window.customCards.push({
-    type: "zeitprofil-card",
+    type: "curve-scheduler-card",
     name: t("card.name"),
     description: t("card.description"),
     preview: true,
   });
 }
 
-console.info("%c ZEITPROFIL-CARD ", "background:#e67e22;color:#fff;border-radius:3px");
+console.info("%c CURVE-SCHEDULER-CARD ", "background:#e67e22;color:#fff;border-radius:3px");

@@ -1,7 +1,7 @@
 {
-  "name": "Zeitprofil",
+  "name": "Curve Scheduler",
   "homeassistant": "2025.3.0",
   "render_readme": true,
   "zip_release": true,
-  "filename": "zeitprofil.zip"
+  "filename": "curve_scheduler.zip"
 }

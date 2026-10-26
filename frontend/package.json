@@ -1,8 +1,8 @@
 {
-  "name": "zeitprofil-card",
+  "name": "curve-scheduler-card",
   "version": "0.1.0",
   "private": true,
-  "description": "Lovelace card for the Zeitprofil Home Assistant integration",
+  "description": "Lovelace card for the Curve Scheduler Home Assistant integration",
   "license": "MIT",
   "type": "module",
   "scripts": {

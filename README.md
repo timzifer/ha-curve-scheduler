@@ -1,4 +1,4 @@
-# Zeitprofil – daily setpoint curves for Home Assistant
+# Curve Scheduler – daily setpoint curves for Home Assistant
 
 [![Validate](https://github.com/timzifer/ha-curve-scheduler/actions/workflows/validate.yml/badge.svg)](https://github.com/timzifer/ha-curve-scheduler/actions/workflows/validate.yml)
 [![CI](https://github.com/timzifer/ha-curve-scheduler/actions/workflows/ci.yml/badge.svg)](https://github.com/timzifer/ha-curve-scheduler/actions/workflows/ci.yml)
@@ -6,7 +6,7 @@
 
 🇩🇪 [Deutsche Anleitung](README.de.md)
 
-**Zeitprofil** calculates a value that changes over the day and writes it to a
+**Curve Scheduler** calculates a value that changes over the day and writes it to a
 device at regular intervals. The typical use is the hot water circulation
 temperature, but it works for any number: buffer tank, room temperature,
 pump speed, brightness …
@@ -41,11 +41,11 @@ or the desktop, without YAML, automations, developer tools or admin rights.
 
 1. Open **HACS** → menu (⋮) → **Custom repositories**.
 2. Add `https://github.com/timzifer/ha-curve-scheduler` with the category **Integration**.
-3. Search for **Zeitprofil**, install it, then restart Home Assistant.
+3. Search for **Curve Scheduler**, install it, then restart Home Assistant.
 
 ### Manual
 
-Copy `custom_components/zeitprofil` into the `custom_components` folder of
+Copy `custom_components/curve_scheduler` into the `custom_components` folder of
 your Home Assistant configuration and restart.
 
 The dashboard card is part of the integration and is registered
@@ -53,7 +53,7 @@ automatically. You do **not** have to add a dashboard resource.
 
 ## Setup (once, by an administrator)
 
-**Settings → Devices & services → Add integration → Zeitprofil**
+**Settings → Devices & services → Add integration → Curve Scheduler**
 
 | Setting | Meaning | Default |
 |---|---|---|
@@ -78,7 +78,7 @@ instances as you like (e.g. circulation and buffer tank). Two example plans,
 
 ### Add the card
 
-Edit a dashboard → **Add card** → **Zeitprofil**. In the card settings you can choose:
+Edit a dashboard → **Add card** → **Curve Scheduler**. In the card settings you can choose:
 
 - which instance to show,
 - **Compact** (today's plan, editor opens on demand) or **Full** (editor always open),
@@ -167,15 +167,15 @@ written value match.
 
 ## Entities
 
-Each instance creates a device **Zeitprofil &lt;name&gt;** with:
+Each instance creates a device **Curve Scheduler &lt;name&gt;** with:
 
 | Entity | Purpose |
 |---|---|
-| `sensor.<name>_sollwert` | current setpoint; attributes `profile`, `reason` (weekday/holiday/exception/override), `next_point_time`, `next_point_value`, `value_in_1h` |
-| `sensor.<name>_profil` | name of the active plan |
-| `switch.<name>_aktiv` | instance on/off |
-| `select.<name>_modus` | `auto` (Automatic) or a plan (manual mode) |
-| `button.<name>_jetzt_anwenden` | write now |
+| `sensor.<name>_setpoint` | current setpoint; attributes `profile`, `reason` (weekday/holiday/exception/override), `next_point_time`, `next_point_value`, `value_in_1h` |
+| `sensor.<name>_profile` | name of the active plan |
+| `switch.<name>_active` | instance on/off |
+| `select.<name>_mode` | `auto` (Automatic) or a plan (manual mode) |
+| `button.<name>_apply_now` | write now |
 
 Mode, switch and all plans survive restarts.
 
@@ -183,11 +183,11 @@ Mode, switch and all plans survive restarts.
 
 | Action | Fields |
 |---|---|
-| `zeitprofil.set_override` | `config_entry_id`, `profile` (name or id), optional `until` |
-| `zeitprofil.clear_override` | `config_entry_id` |
-| `zeitprofil.add_exception` | `config_entry_id`, `from`, optional `to`, `profile`, optional `note` – returns `exception_id` |
-| `zeitprofil.remove_exception` | `config_entry_id`, `exception_id` **or** `date` |
-| `zeitprofil.apply_now` | `config_entry_id` |
+| `curve_scheduler.set_override` | `config_entry_id`, `profile` (name or id), optional `until` |
+| `curve_scheduler.clear_override` | `config_entry_id` |
+| `curve_scheduler.add_exception` | `config_entry_id`, `from`, optional `to`, `profile`, optional `note` – returns `exception_id` |
+| `curve_scheduler.remove_exception` | `config_entry_id`, `exception_id` **or** `date` |
+| `curve_scheduler.apply_now` | `config_entry_id` |
 
 Example: use the holiday plan while nobody is at home.
 
@@ -200,7 +200,7 @@ automation:
         to: not_home
         for: "24:00:00"
     actions:
-      - action: zeitprofil.set_override
+      - action: curve_scheduler.set_override
         data:
           config_entry_id: 01J...   # pick the instance in the UI editor
           profile: Urlaub
@@ -212,26 +212,26 @@ The card uses these commands. None of them requires admin rights.
 
 | Command | Purpose |
 |---|---|
-| `zeitprofil/list` | all instances |
-| `zeitprofil/get` | configuration, plans, revision, live state |
-| `zeitprofil/save` | save plans (`revision` for conflict detection); returns translatable validation errors |
-| `zeitprofil/subscribe` | live updates |
-| `zeitprofil/preview` | backend-computed curve of a day (optionally for unsaved plans) |
-| `zeitprofil/holidays` | days off from the holiday source in a date range |
+| `curve_scheduler/list` | all instances |
+| `curve_scheduler/get` | configuration, plans, revision, live state |
+| `curve_scheduler/save` | save plans (`revision` for conflict detection); returns translatable validation errors |
+| `curve_scheduler/subscribe` | live updates |
+| `curve_scheduler/preview` | backend-computed curve of a day (optionally for unsaved plans) |
+| `curve_scheduler/holidays` | days off from the holiday source in a date range |
 
 ## Development
 
 ```bash
 # backend
 pip install -r requirements_dev.txt
-ruff check . && ruff format --check . && mypy custom_components/zeitprofil
+ruff check . && ruff format --check . && mypy custom_components/curve_scheduler
 pytest
 
 # card
 cd frontend
 npm ci
 npm run lint && npm run typecheck && npm test
-npm run build         # writes custom_components/zeitprofil/frontend/zeitprofil-card.js
+npm run build         # writes custom_components/curve_scheduler/frontend/curve-scheduler-card.js
 npm run demo          # demo page with a fake backend on http://localhost:8765/demo/
 
 # shared interpolation vectors (after changing the algorithm)
@@ -243,7 +243,7 @@ Assistant with the integration on port 8123 (see `config/configuration.yaml`).
 [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md) documents the acceptance test.
 
 Releases: publishing a GitHub release builds the card, sets the version in
-`manifest.json` from the tag and attaches `zeitprofil.zip`, which HACS installs.
+`manifest.json` from the tag and attaches `curve_scheduler.zip`, which HACS installs.
 
 ## License
 

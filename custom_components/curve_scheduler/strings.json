@@ -85,10 +85,10 @@
   "selector": {
     "interpolation": {
       "options": {
-        "stufe": "Steps (jump at each point)",
+        "step": "Steps (jump at each point)",
         "linear": "Linear (straight lines)",
-        "weich": "Smooth (soft start and end)",
-        "kurve": "Curve (smooth, never overshoots)"
+        "smooth": "Smooth (soft start and end)",
+        "curve": "Curve (smooth, never overshoots)"
       }
     }
   },

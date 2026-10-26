@@ -4,10 +4,10 @@ set_override:
       required: true
       selector:
         config_entry:
-          integration: zeitprofil
+          integration: curve_scheduler
     profile:
       required: true
-      example: Urlaub
+      example: Vacation
       selector:
         text:
     until:
@@ -21,7 +21,7 @@ clear_override:
       required: true
       selector:
         config_entry:
-          integration: zeitprofil
+          integration: curve_scheduler
 
 add_exception:
   fields:
@@ -29,7 +29,7 @@ add_exception:
       required: true
       selector:
         config_entry:
-          integration: zeitprofil
+          integration: curve_scheduler
     from:
       required: true
       selector:
@@ -40,12 +40,12 @@ add_exception:
         date:
     profile:
       required: true
-      example: Urlaub
+      example: Vacation
       selector:
         text:
     note:
       required: false
-      example: Sommerurlaub
+      example: Summer holiday
       selector:
         text:
 
@@ -55,7 +55,7 @@ remove_exception:
       required: true
       selector:
         config_entry:
-          integration: zeitprofil
+          integration: curve_scheduler
     exception_id:
       required: false
       selector:
@@ -71,4 +71,4 @@ apply_now:
       required: true
       selector:
         config_entry:
-          integration: zeitprofil
+          integration: curve_scheduler
