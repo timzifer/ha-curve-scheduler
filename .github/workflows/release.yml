@@ -1,17 +1,44 @@
 name: Release
 
+# Builds the card, sets the version in manifest.json and attaches
+# curve_scheduler.zip (installed by HACS, see hacs.json "zip_release").
+#
+# Start it in any of these ways:
+#   - publish a GitHub release with a tag such as v0.1.0
+#   - push a tag:  git tag v0.1.0 && git push origin v0.1.0
+#   - Actions → Release → "Run workflow" and enter the tag
+# For a pushed tag or a manual run the release is created automatically.
+
 on:
   release:
     types: [published]
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Version tag to create, e.g. v0.1.0"
+        required: true
 
 permissions:
   contents: write
+
+concurrency:
+  group: release-${{ github.event.release.tag_name || inputs.tag || github.ref_name }}
 
 jobs:
   release:
     name: Build and attach curve_scheduler.zip
     runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag || github.ref_name }}
     steps:
+      - name: Check tag
+        run: |
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([-.+][0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::Tag '$TAG' is not a version like v0.1.0"
+            exit 1
+          fi
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
@@ -26,13 +53,19 @@ jobs:
           npm run build
       - name: Set version from tag
         run: |
-          version="${GITHUB_REF_NAME#v}"
-          jq --arg v "$version" '.version = $v' custom_components/curve_scheduler/manifest.json > manifest.tmp
+          jq --arg v "${TAG#v}" '.version = $v' custom_components/curve_scheduler/manifest.json > manifest.tmp
           mv manifest.tmp custom_components/curve_scheduler/manifest.json
+          cat custom_components/curve_scheduler/manifest.json
       - name: Create zip
         working-directory: custom_components/curve_scheduler
-        run: zip -r ../../curve_scheduler.zip . -x "__pycache__/*" "*/__pycache__/*"
-      - name: Attach to release
+        run: |
+          zip -r "$GITHUB_WORKSPACE/curve_scheduler.zip" . -x "__pycache__/*" "*/__pycache__/*"
+          unzip -l "$GITHUB_WORKSPACE/curve_scheduler.zip"
+      - name: Create or update release and attach zip
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.TAG }}
+          target_commitish: ${{ github.sha }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
           files: curve_scheduler.zip

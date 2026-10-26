@@ -242,8 +242,18 @@ The repository contains a devcontainer. `scripts/develop` starts a local Home
 Assistant with the integration on port 8123 (see `config/configuration.yaml`).
 [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md) documents the acceptance test.
 
-Releases: publishing a GitHub release builds the card, sets the version in
-`manifest.json` from the tag and attaches `curve_scheduler.zip`, which HACS installs.
+### Releases
+
+HACS installs `curve_scheduler.zip` from the latest GitHub release
+(`zip_release` in `hacs.json`), so at least one release must exist. The
+*Release* workflow builds the card, sets the version in `manifest.json` from
+the tag and attaches the zip. Start it in one of these ways:
+
+- push a tag: `git tag v0.1.0 && git push origin v0.1.0`
+- **Actions → Release → Run workflow** and enter the tag, e.g. `v0.1.0`
+- publish a release with a new tag on GitHub
+
+For a pushed tag or a manual run, the workflow creates the release itself.
 
 ## License
 

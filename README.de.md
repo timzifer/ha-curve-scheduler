@@ -197,6 +197,18 @@ aktivieren (Automation mit der Aktion `curve_scheduler.set_override`).
 
 Siehe [README.md](README.md#development) und [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md).
 
+## Releases
+
+HACS installiert `curve_scheduler.zip` aus dem neuesten GitHub-Release. Es muss
+also mindestens ein Release geben. Der Workflow *Release* baut die Karte,
+setzt die Version in `manifest.json` und hängt die Zip-Datei an. Starten:
+
+- Tag pushen: `git tag v0.1.0 && git push origin v0.1.0`
+- **Actions → Release → Run workflow** und den Tag eingeben, z. B. `v0.1.0`
+- auf GitHub ein Release mit neuem Tag veröffentlichen
+
+Bei einem gepushten Tag oder manuellem Start legt der Workflow das Release selbst an.
+
 ## Lizenz
 
 MIT
