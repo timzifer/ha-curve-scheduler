@@ -9,7 +9,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ServiceValidationError
 import pytest
 
-from custom_components.zeitprofil.const import DOMAIN
+from custom_components.curve_scheduler.const import DOMAIN
 
 from .conftest import TARGET, make_entry, setup_entry
 
@@ -26,7 +26,7 @@ async def test_exceptions(hass: HomeAssistant, entry: Any) -> None:
     response = await hass.services.async_call(
         DOMAIN,
         "add_exception",
-        {"config_entry_id": entry.entry_id, "from": "2026-10-29", "profile": "frei"},
+        {"config_entry_id": entry.entry_id, "from": "2026-10-29", "profile": "day_off"},
         blocking=True,
         return_response=True,
     )
@@ -78,7 +78,7 @@ async def test_invalid_calls(hass: HomeAssistant, entry: Any) -> None:
         await hass.services.async_call(
             DOMAIN,
             "set_override",
-            {"config_entry_id": entry.entry_id, "profile": "frei", "until": "2020-01-01 00:00"},
+            {"config_entry_id": entry.entry_id, "profile": "day_off", "until": "2020-01-01 00:00"},
             blocking=True,
         )
     with pytest.raises(ServiceValidationError):
@@ -93,7 +93,7 @@ async def test_invalid_calls(hass: HomeAssistant, entry: Any) -> None:
                 "config_entry_id": entry.entry_id,
                 "from": "2026-12-24",
                 "to": "2026-12-01",
-                "profile": "frei",
+                "profile": "day_off",
             },
             blocking=True,
         )
@@ -103,7 +103,7 @@ async def test_override_and_clear(hass: HomeAssistant, entry: Any) -> None:
     await hass.services.async_call(
         DOMAIN,
         "set_override",
-        {"config_entry_id": entry.entry_id, "profile": "frei"},
+        {"config_entry_id": entry.entry_id, "profile": "day_off"},
         blocking=True,
     )
     assert float(hass.states.get(TARGET).state) == 60

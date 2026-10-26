@@ -7,7 +7,7 @@ from datetime import date
 
 import pytest
 
-from custom_components.zeitprofil.model import (
+from custom_components.curve_scheduler.model import (
     DayProfile,
     default_schedule,
     normalize_schedule,
@@ -29,13 +29,13 @@ def codes(issues) -> list[str]:
 
 def test_default_schedule_is_valid(schedule: dict) -> None:
     assert validate_schedule(schedule, 20, 70) == []
-    assert schedule["profiles"]["werktag"]["name"] == "Werktag"
-    assert default_schedule(20, 70, 0.5, "en")["profiles"]["frei"]["name"] == "Day off"
+    assert schedule["profiles"]["workday"]["name"] == "Werktag"
+    assert default_schedule(20, 70, 0.5, "en")["profiles"]["day_off"]["name"] == "Day off"
 
 
 def test_default_values_follow_range() -> None:
     data = default_schedule(0, 10, 1, "en")
-    values = {p["v"] for p in data["profiles"]["werktag"]["points"]}
+    values = {p["v"] for p in data["profiles"]["workday"]["points"]}
     assert values == {5.0, 8.0}
 
 
@@ -59,21 +59,21 @@ def test_default_values_follow_range() -> None:
     ],
 )
 def test_point_validation(schedule: dict, points, code: str) -> None:
-    schedule["profiles"]["werktag"]["points"] = points
+    schedule["profiles"]["workday"]["points"] = points
     assert code in codes(validate_schedule(schedule, 20, 70))
 
 
 def test_48_points_are_allowed(schedule: dict) -> None:
-    schedule["profiles"]["werktag"]["points"] = [
+    schedule["profiles"]["workday"]["points"] = [
         {"t": f"{h:02d}:{m:02d}", "v": 40} for h in range(24) for m in (0, 30)
     ]
     assert validate_schedule(schedule, 20, 70) == []
 
 
 def test_profile_validation(schedule: dict) -> None:
-    schedule["profiles"]["frei"]["name"] = "werktag"
-    schedule["profiles"]["werktag"]["color"] = "red"
-    schedule["profiles"]["Bad Id"] = copy.deepcopy(schedule["profiles"]["frei"])
+    schedule["profiles"]["day_off"]["name"] = "werktag"
+    schedule["profiles"]["workday"]["color"] = "red"
+    schedule["profiles"]["Bad Id"] = copy.deepcopy(schedule["profiles"]["day_off"])
     schedule["profiles"]["Bad Id"]["name"] = "Automatik"
     schedule["week"]["sat"] = "missing"
     result = codes(validate_schedule(schedule, 20, 70))
@@ -84,8 +84,8 @@ def test_profile_validation(schedule: dict) -> None:
 
 
 def test_reserved_and_empty_names(schedule: dict) -> None:
-    schedule["profiles"]["frei"]["name"] = "Auto"
-    schedule["profiles"]["werktag"]["name"] = "  "
+    schedule["profiles"]["day_off"]["name"] = "Auto"
+    schedule["profiles"]["workday"]["name"] = "  "
     result = codes(validate_schedule(schedule, 20, 70))
     assert "reserved_name" in result
     assert "empty_name" in result
@@ -93,9 +93,9 @@ def test_reserved_and_empty_names(schedule: dict) -> None:
 
 def test_exception_validation(schedule: dict) -> None:
     schedule["exceptions"] = [
-        {"from": "2026-12-24", "to": "2026-12-20", "profile": "frei"},
-        {"from": "2026-13-01", "to": "2026-12-31", "profile": "frei"},
-        {"from": "2026-12-01", "to": "2026-12-02", "profile": "urlaub"},
+        {"from": "2026-12-24", "to": "2026-12-20", "profile": "day_off"},
+        {"from": "2026-13-01", "to": "2026-12-31", "profile": "day_off"},
+        {"from": "2026-12-01", "to": "2026-12-02", "profile": "vacation"},
     ]
     result = codes(validate_schedule(schedule, 20, 70))
     assert result.count("date_range_reversed") == 1
@@ -105,7 +105,7 @@ def test_exception_validation(schedule: dict) -> None:
 
 def test_deleting_used_profile_is_reported_clearly(schedule: dict) -> None:
     new = copy.deepcopy(schedule)
-    del new["profiles"]["frei"]
+    del new["profiles"]["day_off"]
     issues = validate_update(schedule, new, 20, 70)
     assert codes(issues) == ["profile_in_use"]
     assert issues[0].params["name"] == "Frei"
@@ -114,21 +114,21 @@ def test_deleting_used_profile_is_reported_clearly(schedule: dict) -> None:
 
 
 def test_deleting_unused_profile(schedule: dict) -> None:
-    schedule["profiles"]["urlaub"] = {
+    schedule["profiles"]["vacation"] = {
         "name": "Urlaub",
         "color": "#2980b9",
         "points": [{"t": "00:00", "v": 30}],
     }
     new = copy.deepcopy(schedule)
-    del new["profiles"]["urlaub"]
+    del new["profiles"]["vacation"]
     assert validate_update(schedule, new, 20, 70) == []
-    assert profile_usages(schedule, "urlaub") == []
+    assert profile_usages(schedule, "vacation") == []
 
 
 def test_normalize_assigns_ids_and_sorts(schedule: dict) -> None:
     schedule["exceptions"] = [
-        {"from": "2027-01-02", "to": "2027-01-03", "profile": "frei", "note": " B "},
-        {"from": "2026-12-24", "to": "2026-12-26", "profile": "frei"},
+        {"from": "2027-01-02", "to": "2027-01-03", "profile": "day_off", "note": " B "},
+        {"from": "2026-12-24", "to": "2026-12-26", "profile": "day_off"},
     ]
     result = normalize_schedule(schedule)
     assert [e["from"] for e in result["exceptions"]] == ["2026-12-24", "2027-01-02"]
@@ -137,27 +137,27 @@ def test_normalize_assigns_ids_and_sorts(schedule: dict) -> None:
 
 
 def test_priority(schedule: dict) -> None:
-    schedule["profiles"]["urlaub"] = {
+    schedule["profiles"]["vacation"] = {
         "name": "Urlaub",
         "color": "#2980b9",
         "points": [{"t": "00:00", "v": 30}],
     }
-    schedule["exceptions"] = [{"from": "2026-12-24", "to": "2027-01-06", "profile": "urlaub"}]
+    schedule["exceptions"] = [{"from": "2026-12-24", "to": "2027-01-06", "profile": "vacation"}]
     holidays = {date(2026, 12, 25), date(2026, 11, 1)}
 
     def is_holiday(day: date) -> bool:
         return day in holidays
 
     # Thursday -> weekday profile
-    assert resolve_day(schedule, date(2026, 10, 29), is_holiday) == DayProfile("werktag", "weekday")
+    assert resolve_day(schedule, date(2026, 10, 29), is_holiday) == DayProfile("workday", "weekday")
     # Saturday -> weekend
-    assert resolve_day(schedule, date(2026, 10, 31), is_holiday).profile_id == "frei"
+    assert resolve_day(schedule, date(2026, 10, 31), is_holiday).profile_id == "day_off"
     # Holiday on a Sunday
     assert resolve_day(schedule, date(2026, 11, 1), is_holiday).reason == "holiday"
     # Exception beats holiday
     assert resolve_day(schedule, date(2026, 12, 25), is_holiday) == DayProfile(
-        "urlaub", "exception"
+        "vacation", "exception"
     )
     # Inclusive end
-    assert resolve_day(schedule, date(2027, 1, 6), is_holiday).profile_id == "urlaub"
-    assert resolve_day(schedule, date(2027, 1, 7), is_holiday).profile_id == "werktag"
+    assert resolve_day(schedule, date(2027, 1, 6), is_holiday).profile_id == "vacation"
+    assert resolve_day(schedule, date(2027, 1, 7), is_holiday).profile_id == "workday"

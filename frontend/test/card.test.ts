@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import "../src/zeitprofil-card";
-import type { ZeitprofilCard } from "../src/card";
+import "../src/curve-scheduler-card";
+import type { CurveSchedulerCard } from "../src/card";
 import type { HomeAssistant } from "../src/api";
 import type { InstanceData } from "../src/model";
 import { instance } from "./fixtures/instance";
@@ -24,14 +24,14 @@ function fakeHass(data: InstanceData, isAdmin = false) {
 
 async function mount(config: Record<string, unknown>, isAdmin = false) {
   const data = instance();
-  data.state.timeline = ["werktag", "werktag", "werktag", "werktag", "frei"].map((id, i) => ({
+  data.state.timeline = ["workday", "workday", "workday", "workday", "day_off"].map((id, i) => ({
     date: `2026-10-${27 + i}`,
     profile_id: id,
     reason: "weekday" as const,
   }));
   const { hass, callService } = fakeHass(data, isAdmin);
-  const card = document.createElement("zeitprofil-card") as ZeitprofilCard;
-  card.setConfig({ type: "custom:zeitprofil-card", entry_id: "abc", ...config });
+  const card = document.createElement("curve-scheduler-card") as CurveSchedulerCard;
+  card.setConfig({ type: "custom:curve-scheduler-card", entry_id: "abc", ...config });
   card.hass = hass;
   document.body.appendChild(card);
   for (let i = 0; i < 5; i++) {
@@ -45,24 +45,24 @@ afterEach(() => {
   document.body.innerHTML = "";
 });
 
-describe("zeitprofil-card", () => {
+describe("curve-scheduler-card", () => {
   it("is announced to the card picker", () => {
-    expect(window.customCards?.some((c) => c.type === "zeitprofil-card")).toBe(true);
+    expect(window.customCards?.some((c) => c.type === "curve-scheduler-card")).toBe(true);
   });
 
   it("shows today's summary", async () => {
     const { card } = await mount({});
     const text = card.shadowRoot!.querySelector(".headline")!.textContent;
     expect(text).toBe("Heute: Werktag · jetzt 60\u00a0°C · ab 18:00 → 45\u00a0°C");
-    expect(card.shadowRoot!.querySelector("zeitprofil-curve")).not.toBeNull();
-    expect(card.shadowRoot!.querySelector("zeitprofil-editor")).toBeNull();
+    expect(card.shadowRoot!.querySelector("curve-scheduler-curve")).not.toBeNull();
+    expect(card.shadowRoot!.querySelector("curve-scheduler-editor")).toBeNull();
   });
 
   it("opens the editor", async () => {
     const { card } = await mount({});
     card.shadowRoot!.querySelector<HTMLButtonElement>("button.edit")!.click();
     await card.updateComplete;
-    expect(card.shadowRoot!.querySelector("zeitprofil-editor")).not.toBeNull();
+    expect(card.shadowRoot!.querySelector("curve-scheduler-editor")).not.toBeNull();
   });
 
   it("hides the editor for non-admins when not allowed", async () => {
@@ -74,21 +74,21 @@ describe("zeitprofil-card", () => {
 
   it("full view shows the editor directly", async () => {
     const { card } = await mount({ view: "full" });
-    expect(card.shadowRoot!.querySelector("zeitprofil-editor")).not.toBeNull();
+    expect(card.shadowRoot!.querySelector("curve-scheduler-editor")).not.toBeNull();
   });
 
   it("changes the mode", async () => {
     const { card, callService } = await mount({});
     const select = card.shadowRoot!.querySelector<HTMLSelectElement>("select.mode-select")!;
-    select.value = "frei";
+    select.value = "day_off";
     select.dispatchEvent(new Event("change"));
-    expect(callService).toHaveBeenCalledWith("zeitprofil", "set_override", {
+    expect(callService).toHaveBeenCalledWith("curve_scheduler", "set_override", {
       config_entry_id: "abc",
-      profile: "frei",
+      profile: "day_off",
     });
     select.value = "auto";
     select.dispatchEvent(new Event("change"));
-    expect(callService).toHaveBeenCalledWith("zeitprofil", "clear_override", {
+    expect(callService).toHaveBeenCalledWith("curve_scheduler", "clear_override", {
       config_entry_id: "abc",
     });
   });

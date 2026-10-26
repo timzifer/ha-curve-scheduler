@@ -4,7 +4,7 @@ default_config:
 logger:
   default: info
   logs:
-    custom_components.zeitprofil: debug
+    custom_components.curve_scheduler: debug
 
 # Demo targets to try the integration without real hardware.
 input_number:

@@ -1,8 +1,8 @@
-# Zeitprofil – Tagesverläufe für Sollwerte in Home Assistant
+# Curve Scheduler – Tagesverläufe für Sollwerte in Home Assistant
 
 🇬🇧 [English version](README.md)
 
-**Zeitprofil** berechnet einen Wert, der sich über den Tag verändert, und
+**Curve Scheduler** berechnet einen Wert, der sich über den Tag verändert, und
 schreibt ihn regelmäßig in ein Gerät. Typisch ist die Soll-Temperatur einer
 Warmwasser-Zirkulation, es funktioniert aber mit jedem Zahlenwert:
 Pufferspeicher, Raumtemperatur, Pumpendrehzahl, Helligkeit …
@@ -39,11 +39,11 @@ Entwicklerwerkzeuge oder Admin-Rechte.
 
 1. **HACS** öffnen → Menü (⋮) → **Benutzerdefinierte Repositories**.
 2. `https://github.com/timzifer/ha-curve-scheduler` mit dem Typ **Integration** hinzufügen.
-3. Nach **Zeitprofil** suchen, installieren und Home Assistant neu starten.
+3. Nach **Curve Scheduler** suchen, installieren und Home Assistant neu starten.
 
 ### Manuell
 
-Den Ordner `custom_components/zeitprofil` in den Ordner `custom_components`
+Den Ordner `custom_components/curve_scheduler` in den Ordner `custom_components`
 der Home-Assistant-Konfiguration kopieren und neu starten.
 
 Die Dashboard-Karte gehört zur Integration und wird automatisch registriert.
@@ -51,7 +51,7 @@ Eine Dashboard-Ressource muss **nicht** angelegt werden.
 
 ## Einrichtung (einmalig durch einen Administrator)
 
-**Einstellungen → Geräte & Dienste → Integration hinzufügen → Zeitprofil**
+**Einstellungen → Geräte & Dienste → Integration hinzufügen → Curve Scheduler**
 
 | Einstellung | Bedeutung | Standard |
 |---|---|---|
@@ -76,7 +76,7 @@ Einrichten entstehen zwei Beispielpläne: *Werktag* und *Frei*.
 
 ### Karte hinzufügen
 
-Dashboard bearbeiten → **Karte hinzufügen** → **Zeitprofil**. In den Karteneinstellungen:
+Dashboard bearbeiten → **Karte hinzufügen** → **Curve Scheduler**. In den Karteneinstellungen:
 
 - welche Instanz angezeigt wird,
 - **Kompakt** (Heute, Editor bei Bedarf) oder **Voll** (Editor immer offen),
@@ -168,15 +168,15 @@ geschriebener Wert stimmen deshalb überein.
 
 ## Entities
 
-Pro Instanz entsteht ein Gerät **Zeitprofil &lt;Name&gt;** mit:
+Pro Instanz entsteht ein Gerät **Curve Scheduler &lt;Name&gt;** mit:
 
 | Entity | Zweck |
 |---|---|
-| `sensor.<name>_sollwert` | aktueller Sollwert; Attribute `profile`, `reason` (weekday/holiday/exception/override), `next_point_time`, `next_point_value`, `value_in_1h` |
-| `sensor.<name>_profil` | Name des aktiven Plans |
-| `switch.<name>_aktiv` | Instanz ein/aus |
-| `select.<name>_modus` | `auto` (Automatik) oder ein Plan (manueller Modus) |
-| `button.<name>_jetzt_anwenden` | sofort schreiben |
+| `sensor.<name>_setpoint` | aktueller Sollwert; Attribute `profile`, `reason` (weekday/holiday/exception/override), `next_point_time`, `next_point_value`, `value_in_1h` |
+| `sensor.<name>_profile` | Name des aktiven Plans |
+| `switch.<name>_active` | Instanz ein/aus |
+| `select.<name>_mode` | `auto` (Automatik) oder ein Plan (manueller Modus) |
+| `button.<name>_apply_now` | sofort schreiben |
 
 Modus, Schalter und alle Pläne bleiben über Neustarts erhalten.
 
@@ -184,14 +184,14 @@ Modus, Schalter und alle Pläne bleiben über Neustarts erhalten.
 
 | Aktion | Felder |
 |---|---|
-| `zeitprofil.set_override` | `config_entry_id`, `profile` (Name oder ID), optional `until` |
-| `zeitprofil.clear_override` | `config_entry_id` |
-| `zeitprofil.add_exception` | `config_entry_id`, `from`, optional `to`, `profile`, optional `note` – liefert `exception_id` |
-| `zeitprofil.remove_exception` | `config_entry_id`, `exception_id` **oder** `date` |
-| `zeitprofil.apply_now` | `config_entry_id` |
+| `curve_scheduler.set_override` | `config_entry_id`, `profile` (Name oder ID), optional `until` |
+| `curve_scheduler.clear_override` | `config_entry_id` |
+| `curve_scheduler.add_exception` | `config_entry_id`, `from`, optional `to`, `profile`, optional `note` – liefert `exception_id` |
+| `curve_scheduler.remove_exception` | `config_entry_id`, `exception_id` **oder** `date` |
+| `curve_scheduler.apply_now` | `config_entry_id` |
 
 So lässt sich z. B. bei längerer Abwesenheit automatisch der Urlaubsplan
-aktivieren (Automation mit der Aktion `zeitprofil.set_override`).
+aktivieren (Automation mit der Aktion `curve_scheduler.set_override`).
 
 ## Entwicklung
 

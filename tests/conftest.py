@@ -1,4 +1,4 @@
-"""Shared fixtures for Zeitprofil tests."""
+"""Shared fixtures for Curve Scheduler tests."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from homeassistant.setup import async_setup_component
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.zeitprofil.const import (
+from custom_components.curve_scheduler.const import (
     CONF_HOLIDAY_SOURCE,
     CONF_INTERPOLATION,
     CONF_INTERVAL,
@@ -37,7 +37,7 @@ def mock_frontend() -> Generator[None]:
     """Skip the real frontend (needs the hass_frontend package) and the card."""
     with (
         patch("homeassistant.components.frontend.async_setup", return_value=True),
-        patch("custom_components.zeitprofil.async_register_frontend"),
+        patch("custom_components.curve_scheduler.async_register_frontend"),
     ):
         yield
 
@@ -74,7 +74,7 @@ def entry_options(**overrides: Any) -> dict[str, Any]:
     """Return default options for a config entry."""
     options: dict[str, Any] = {
         CONF_INTERVAL: 5,
-        CONF_INTERPOLATION: "kurve",
+        CONF_INTERPOLATION: "curve",
         CONF_MIN: 20.0,
         CONF_MAX: 70.0,
         CONF_STEP: 0.5,

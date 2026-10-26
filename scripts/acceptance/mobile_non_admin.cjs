@@ -20,14 +20,14 @@ async function state(id) {
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
   await page.goto(`${BASE}/lovelace/ww`);
-  const card = page.locator("zeitprofil-card");
+  const card = page.locator("curve-scheduler-card");
   await card.locator(".headline").waitFor({ timeout: 30000 });
   console.log("headline:", await card.locator(".headline").textContent());
   await shot(page, "01-today");
   const before = (await state("input_number.zirkulation_soll")).state;
 
   await card.locator("button.edit").tap();
-  const curve = card.locator("zeitprofil-editor zeitprofil-curve");
+  const curve = card.locator("curve-scheduler-editor curve-scheduler-curve");
   await curve.locator(".handle").first().waitFor();
   // 1) drag point 05:30 down with real touch events
   const handle = curve.locator(".handle").nth(1);
@@ -42,8 +42,8 @@ async function state(id) {
   await shot(page, "02-dragging");
   await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
   await page.waitForTimeout(200);
-  const editor = card.locator("zeitprofil-editor");
-  const pts = () => editor.evaluate((e) => JSON.stringify(e._draft.profiles.werktag.points));
+  const editor = card.locator("curve-scheduler-editor");
+  const pts = () => editor.evaluate((e) => JSON.stringify(e._draft.profiles.workday.points));
   console.log("after drag:", await pts());
   // 2) add a point with the fields
   await editor.locator("button.add-point").tap();
@@ -56,7 +56,7 @@ async function state(id) {
   await shot(page, "03-profile-edited");
   // 3) Saturday -> Werktag
   await editor.locator(".tab").nth(1).tap();
-  await editor.locator('select[data-day="sat"]').selectOption("werktag");
+  await editor.locator('select[data-day="sat"]').selectOption("workday");
   await shot(page, "04-week");
   // 4) holiday
   await editor.locator(".tab").nth(2).tap();
@@ -73,7 +73,7 @@ async function state(id) {
   await page.waitForTimeout(500);
   await shot(page, "06-saved");
   const after = await state("input_number.zirkulation_soll");
-  const sensor = await state("sensor.zirkulation_sollwert");
+  const sensor = await state("sensor.zirkulation_setpoint");
   console.log("target before:", before, "after:", after.state, "sensor:", sensor.state, sensor.attributes.profile);
   console.log("errors:", errors.filter((e) => !e.includes("favicon")).join("\n") || "none");
   await browser.close();

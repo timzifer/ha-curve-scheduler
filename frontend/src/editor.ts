@@ -1,5 +1,5 @@
 /**
- * <zeitprofil-editor>: edit daily plans, weekly plan and exceptions.
+ * <curve-scheduler-editor>: edit daily plans, weekly plan and exceptions.
  *
  * All changes go to a local draft with undo/redo. Nothing is sent to Home
  * Assistant before "Save".
@@ -47,7 +47,7 @@ const TEMPERATURE_UNITS = ["°C", "°F", "K", "C", "F"];
 const SNAP_OPTIONS = [5, 15, 30, 60];
 const HISTORY_LIMIT = 100;
 
-export class ZeitprofilEditor extends LitElement {
+export class CurveSchedulerEditor extends LitElement {
   static properties = {
     hass: { attribute: false },
     data: { attribute: false },
@@ -519,7 +519,7 @@ export class ZeitprofilEditor extends LitElement {
     if (minute === undefined) {
       return;
     }
-    const curve = this.renderRoot.querySelector("zeitprofil-curve");
+    const curve = this.renderRoot.querySelector("curve-scheduler-curve");
     const value = this.normalizeValue(
       curve?.curveValue(minute) ?? (this.config.min + this.config.max) / 2,
     );
@@ -895,7 +895,7 @@ export class ZeitprofilEditor extends LitElement {
           </div>`
         : nothing}
       <div class="chart-wrapper">
-        <zeitprofil-curve
+        <curve-scheduler-curve
           editable
           .points=${profile.points}
           .context=${null}
@@ -914,7 +914,7 @@ export class ZeitprofilEditor extends LitElement {
             (this._selected = e.detail.index)}
           @curve-notice=${(e: CustomEvent<CurveNoticeDetail>) =>
             this.showMessage({ kind: "warning", text: this.t(e.detail.key, e.detail.params) })}
-        ></zeitprofil-curve>
+        ></curve-scheduler-curve>
       </div>
       <div class="row chart-footer">
         <span class="muted grow">${this.t("profiles.hint")}</span>
@@ -1544,12 +1544,12 @@ export class ZeitprofilEditor extends LitElement {
   ];
 }
 
-if (!customElements.get("zeitprofil-editor")) {
-  customElements.define("zeitprofil-editor", ZeitprofilEditor);
+if (!customElements.get("curve-scheduler-editor")) {
+  customElements.define("curve-scheduler-editor", CurveSchedulerEditor);
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "zeitprofil-editor": ZeitprofilEditor;
+    "curve-scheduler-editor": CurveSchedulerEditor;
   }
 }

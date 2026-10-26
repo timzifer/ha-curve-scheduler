@@ -17,7 +17,7 @@ import voluptuous as vol
 
 from .const import DOMAIN
 from .model import ScheduleValidationError, validate_schedule
-from .runtime import RevisionConflictError, ZeitprofilRuntime
+from .runtime import CurveSchedulerRuntime, RevisionConflictError
 
 ERR_NOT_FOUND = "not_found"
 ERR_INVALID = "invalid_schedule"
@@ -26,7 +26,7 @@ ERR_CONFLICT = "revision_conflict"
 
 def _runtime(
     hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
-) -> ZeitprofilRuntime | None:
+) -> CurveSchedulerRuntime | None:
     entry = hass.config_entries.async_get_entry(msg["entry_id"])
     if entry is None or entry.domain != DOMAIN or entry.state is not ConfigEntryState.LOADED:
         connection.send_error(
@@ -38,7 +38,7 @@ def _runtime(
             translation_placeholders={"entry_id": msg["entry_id"]},
         )
         return None
-    runtime: ZeitprofilRuntime = entry.runtime_data
+    runtime: CurveSchedulerRuntime = entry.runtime_data
     return runtime
 
 
@@ -63,7 +63,7 @@ def ws_list(
     for entry in hass.config_entries.async_entries(DOMAIN):
         if entry.state is not ConfigEntryState.LOADED:
             continue
-        runtime: ZeitprofilRuntime = entry.runtime_data
+        runtime: CurveSchedulerRuntime = entry.runtime_data
         result.append(
             {"entry_id": entry.entry_id, "title": entry.title, "config": runtime.config_dict()}
         )

@@ -23,7 +23,7 @@ TIMELINE_DAYS_BEFORE = 2
 TIMELINE_DAYS_AFTER = 2
 TIMELINE_LENGTH = TIMELINE_DAYS_BEFORE + 1 + TIMELINE_DAYS_AFTER
 
-MODES = ("stufe", "linear", "weich", "kurve")
+MODES = ("step", "linear", "smooth", "curve")
 
 Point = tuple[float, float]
 
@@ -117,13 +117,13 @@ def interpolate(timeline: Sequence[Point], x: float, mode: str) -> float:
     x1 = xs[index + 1]
     y0 = ys[index]
     y1 = ys[index + 1]
-    if mode == "stufe":
+    if mode == "step":
         return y0
     width = x1 - x0
     s = (x - x0) / width
     if mode == "linear":
         return y0 + (y1 - y0) * s
-    if mode == "weich":
+    if mode == "smooth":
         return y0 + (y1 - y0) * (s * s * (3.0 - 2.0 * s))
     tangents = pchip_tangents(xs, ys)
     s2 = s * s

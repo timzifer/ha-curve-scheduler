@@ -16,7 +16,7 @@ from pytest_homeassistant_custom_component.common import (
     async_mock_service,
 )
 
-from custom_components.zeitprofil.const import DOMAIN
+from custom_components.curve_scheduler.const import DOMAIN
 
 from .conftest import TARGET, make_entry, setup_entry
 
@@ -46,13 +46,13 @@ async def test_writes_on_start_and_on_interval(
 ) -> None:
     # Workday profile at 12:00 is the low level (45).
     assert target_value(hass) == 45
-    sensor = hass.states.get("sensor.zirkulation_sollwert")
+    sensor = hass.states.get("sensor.zirkulation_setpoint")
     assert float(sensor.state) == 45
-    assert sensor.attributes["profile_id"] == "werktag"
+    assert sensor.attributes["profile_id"] == "workday"
     assert sensor.attributes["reason"] == "weekday"
     assert sensor.attributes["next_point_value"] == 45
     assert sensor.attributes["next_point_time"].startswith("2026-10-29T17:00")
-    assert hass.states.get("sensor.zirkulation_profil").state == "Workday"
+    assert hass.states.get("sensor.zirkulation_profile").state == "Workday"
 
     freezer.move_to("2026-10-29 17:15:00+01:00")
     await tick(hass, freezer, timedelta(minutes=5))
@@ -66,7 +66,7 @@ async def test_value_in_one_hour_attribute(
 ) -> None:
     freezer.move_to("2026-10-29 16:45:00+01:00")
     await setup_entry(hass, make_entry())
-    attrs = hass.states.get("sensor.zirkulation_sollwert").attributes
+    attrs = hass.states.get("sensor.zirkulation_setpoint").attributes
     assert attrs["value_in_1h"] == 60
 
 
@@ -124,7 +124,7 @@ async def test_unavailable_target(
     assert len(warnings) == 1
     assert hass.states.get(TARGET).state == STATE_UNAVAILABLE
     # Sensor keeps showing the computed value.
-    assert float(hass.states.get("sensor.zirkulation_sollwert").state) == 60
+    assert float(hass.states.get("sensor.zirkulation_setpoint").state) == 60
 
     calls = async_mock_service(hass, "input_number", "set_value")
     hass.states.async_set(TARGET, "40", {"min": 20, "max": 70})
@@ -137,15 +137,15 @@ async def test_disabled_does_not_write(
     hass: HomeAssistant, started: Any, freezer: FrozenDateTimeFactory
 ) -> None:
     await hass.services.async_call(
-        "switch", "turn_off", {"entity_id": "switch.zirkulation_aktiv"}, blocking=True
+        "switch", "turn_off", {"entity_id": "switch.zirkulation_active"}, blocking=True
     )
-    assert hass.states.get("switch.zirkulation_aktiv").state == "off"
+    assert hass.states.get("switch.zirkulation_active").state == "off"
     freezer.move_to("2026-10-29 17:40:00+01:00")
     await tick(hass, freezer, timedelta(minutes=5))
     assert target_value(hass) == 45
-    assert float(hass.states.get("sensor.zirkulation_sollwert").state) == 60
+    assert float(hass.states.get("sensor.zirkulation_setpoint").state) == 60
     await hass.services.async_call(
-        "switch", "turn_on", {"entity_id": "switch.zirkulation_aktiv"}, blocking=True
+        "switch", "turn_on", {"entity_id": "switch.zirkulation_active"}, blocking=True
     )
     assert target_value(hass) == 60
 
@@ -154,18 +154,18 @@ async def test_override_via_select(hass: HomeAssistant, started: Any) -> None:
     await hass.services.async_call(
         "select",
         "select_option",
-        {"entity_id": "select.zirkulation_modus", "option": "Day off"},
+        {"entity_id": "select.zirkulation_mode", "option": "Day off"},
         blocking=True,
     )
     # Day off profile at 12:00 is the high level.
     assert target_value(hass) == 60
-    sensor = hass.states.get("sensor.zirkulation_sollwert")
+    sensor = hass.states.get("sensor.zirkulation_setpoint")
     assert sensor.attributes["reason"] == "override"
-    assert hass.states.get("select.zirkulation_modus").state == "Day off"
+    assert hass.states.get("select.zirkulation_mode").state == "Day off"
     await hass.services.async_call(
         "select",
         "select_option",
-        {"entity_id": "select.zirkulation_modus", "option": "auto"},
+        {"entity_id": "select.zirkulation_mode", "option": "auto"},
         blocking=True,
     )
     assert target_value(hass) == 45
@@ -180,7 +180,7 @@ async def test_override_until_expires(
         "set_override",
         {
             "config_entry_id": entry.entry_id,
-            "profile": "frei",
+            "profile": "day_off",
             "until": "2026-10-29 13:00:00",
         },
         blocking=True,
@@ -205,21 +205,21 @@ async def test_restart_keeps_override_switch_and_data(
         blocking=True,
     )
     schedule = runtime.schedule_dict()
-    schedule["profiles"]["werktag"]["points"][0]["v"] = 50.0
+    schedule["profiles"]["workday"]["points"][0]["v"] = 50.0
     await runtime.async_save_schedule(schedule, runtime.revision)
     await hass.services.async_call(
-        "switch", "turn_off", {"entity_id": "switch.zirkulation_aktiv"}, blocking=True
+        "switch", "turn_off", {"entity_id": "switch.zirkulation_active"}, blocking=True
     )
     await hass.async_block_till_done()
 
     assert await hass.config_entries.async_reload(entry.entry_id)
     await hass.async_block_till_done()
     runtime = entry.runtime_data
-    assert runtime.data["override"]["profile"] == "frei"
+    assert runtime.data["override"]["profile"] == "day_off"
     assert runtime.enabled is False
-    assert runtime.data["profiles"]["werktag"]["points"][0]["v"] == 50.0
-    assert hass.states.get("select.zirkulation_modus").state == "Day off"
-    assert hass.states.get("switch.zirkulation_aktiv").state == "off"
+    assert runtime.data["profiles"]["workday"]["points"][0]["v"] == 50.0
+    assert hass.states.get("select.zirkulation_mode").state == "Day off"
+    assert hass.states.get("switch.zirkulation_active").state == "off"
 
 
 async def test_loads_from_storage(
@@ -259,15 +259,15 @@ async def test_holiday_from_workday_sensor(
     hass.states.async_set("binary_sensor.workday", "off")
     await hass.async_block_till_done()
     assert target_value(hass) == 60
-    assert hass.states.get("sensor.zirkulation_sollwert").attributes["reason"] == "holiday"
+    assert hass.states.get("sensor.zirkulation_setpoint").attributes["reason"] == "holiday"
 
     # Exceptions beat holidays.
     runtime = entry.runtime_data
     schedule = runtime.schedule_dict()
-    schedule["exceptions"] = [{"from": "2026-10-29", "to": "2026-10-29", "profile": "werktag"}]
+    schedule["exceptions"] = [{"from": "2026-10-29", "to": "2026-10-29", "profile": "workday"}]
     await runtime.async_save_schedule(schedule, runtime.revision)
     assert target_value(hass) == 45
-    assert hass.states.get("sensor.zirkulation_sollwert").attributes["reason"] == "exception"
+    assert hass.states.get("sensor.zirkulation_setpoint").attributes["reason"] == "exception"
 
 
 async def test_holiday_from_calendar(
@@ -347,7 +347,7 @@ async def test_dst_days(
     for minutes in range(0, 26 * 60, 10):
         runtime.compute_at(dt_util.now() + timedelta(minutes=minutes))
     await tick(hass, freezer, timedelta(hours=1))
-    assert hass.states.get("sensor.zirkulation_sollwert").state not in ("unknown", "unavailable")
+    assert hass.states.get("sensor.zirkulation_setpoint").state not in ("unknown", "unavailable")
 
 
 async def test_no_jump_at_midnight_friday_to_saturday(
@@ -359,8 +359,8 @@ async def test_no_jump_at_midnight_friday_to_saturday(
     tz = dt_util.get_default_time_zone()
     before = runtime.compute_at(datetime(2026, 10, 30, 23, 59, 59, 999000, tzinfo=tz))
     after = runtime.compute_at(datetime(2026, 10, 31, 0, 0, tzinfo=tz))
-    assert before.profile_id == "werktag"
-    assert after.profile_id == "frei"
+    assert before.profile_id == "workday"
+    assert after.profile_id == "day_off"
     assert abs(before.raw - after.raw) < 0.01
 
 
@@ -393,8 +393,8 @@ async def test_auto_cleanup_of_past_exceptions(
     schedule = runtime.schedule_dict()
     schedule["auto_cleanup"] = True
     schedule["exceptions"] = [
-        {"from": "2026-10-20", "to": "2026-10-29", "profile": "frei"},
-        {"from": "2026-12-24", "to": "2026-12-26", "profile": "frei"},
+        {"from": "2026-10-20", "to": "2026-10-29", "profile": "day_off"},
+        {"from": "2026-12-24", "to": "2026-12-26", "profile": "day_off"},
     ]
     await runtime.async_save_schedule(schedule, runtime.revision)
     freezer.move_to("2026-10-30 00:01:00+01:00")

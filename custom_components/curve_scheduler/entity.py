@@ -1,4 +1,4 @@
-"""Base entity for Zeitprofil."""
+"""Base entity for Curve Scheduler."""
 
 from __future__ import annotations
 
@@ -7,30 +7,30 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.util import slugify
 
 from .const import DOMAIN
-from .runtime import ZeitprofilRuntime
+from .runtime import CurveSchedulerRuntime
 
 
-class ZeitprofilEntity(Entity):
+class CurveSchedulerEntity(Entity):
     """Common behaviour: device, naming and update subscription."""
 
     _attr_has_entity_name = True
     _attr_should_poll = False
 
     def __init__(
-        self, runtime: ZeitprofilRuntime, key: str, object_suffix: str, domain: str
+        self, runtime: CurveSchedulerRuntime, key: str, object_suffix: str, domain: str
     ) -> None:
         """Initialize the entity."""
         self.runtime = runtime
         entry = runtime.entry
         self._attr_unique_id = f"{entry.entry_id}_{key}"
         self._attr_translation_key = key
-        # Stable, language independent entity ids such as sensor.zirkulation_sollwert.
+        # Stable, language independent entity ids such as sensor.zirkulation_setpoint.
         self.entity_id = f"{domain}.{slugify(entry.title)}_{object_suffix}"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
-            name=f"Zeitprofil {entry.title}",
-            manufacturer="Zeitprofil",
-            model="Zeitprofil",
+            name=f"Curve Scheduler {entry.title}",
+            manufacturer="Curve Scheduler",
+            model="Curve Scheduler",
             entry_type=DeviceEntryType.SERVICE,
         )
 

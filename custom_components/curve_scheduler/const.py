@@ -1,10 +1,10 @@
-"""Constants for the Zeitprofil integration."""
+"""Constants for the Curve Scheduler integration."""
 
 from __future__ import annotations
 
 from typing import Final
 
-DOMAIN: Final = "zeitprofil"
+DOMAIN: Final = "curve_scheduler"
 
 # Config entry keys
 CONF_TARGET: Final = "target_entity"
@@ -18,13 +18,13 @@ CONF_HOLIDAY_SOURCE: Final = "holiday_source"
 CONF_THRESHOLD: Final = "write_threshold"
 
 DEFAULT_INTERVAL: Final = 5
-DEFAULT_INTERPOLATION: Final = "kurve"
+DEFAULT_INTERPOLATION: Final = "curve"
 DEFAULT_MIN: Final = 20.0
 DEFAULT_MAX: Final = 70.0
 DEFAULT_STEP: Final = 0.5
 DEFAULT_THRESHOLD: Final = 0.0
 
-INTERPOLATION_MODES: Final = ["stufe", "linear", "weich", "kurve"]
+INTERPOLATION_MODES: Final = ["step", "linear", "smooth", "curve"]
 
 TARGET_DOMAINS: Final = ["number", "input_number", "climate", "water_heater"]
 HOLIDAY_DOMAINS: Final = ["binary_sensor", "calendar"]
@@ -52,10 +52,10 @@ MODE_AUTO: Final = "auto"
 STORAGE_VERSION: Final = 1
 STORAGE_MINOR_VERSION: Final = 1
 
-FRONTEND_URL_BASE: Final = "/zeitprofil_static"
-CARD_FILENAME: Final = "zeitprofil-card.js"
+FRONTEND_URL_BASE: Final = "/curve_scheduler_static"
+CARD_FILENAME: Final = "curve-scheduler-card.js"
 
-SIGNAL_UPDATE: Final = "zeitprofil_update_{}"
+SIGNAL_UPDATE: Final = "curve_scheduler_update_{}"
 
 SERVICE_SET_OVERRIDE: Final = "set_override"
 SERVICE_CLEAR_OVERRIDE: Final = "clear_override"

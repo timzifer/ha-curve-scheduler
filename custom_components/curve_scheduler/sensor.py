@@ -9,16 +9,16 @@ from homeassistant.const import UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from . import ZeitprofilConfigEntry
-from .entity import ZeitprofilEntity
-from .runtime import ZeitprofilRuntime
+from . import CurveSchedulerConfigEntry
+from .entity import CurveSchedulerEntity
+from .runtime import CurveSchedulerRuntime
 
 TEMPERATURE_UNITS = {unit.value for unit in UnitOfTemperature}
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ZeitprofilConfigEntry,
+    entry: CurveSchedulerConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up the sensors."""
@@ -26,14 +26,14 @@ async def async_setup_entry(
     async_add_entities([SetpointSensor(runtime), ProfileSensor(runtime)])
 
 
-class SetpointSensor(ZeitprofilEntity, SensorEntity):
+class SetpointSensor(CurveSchedulerEntity, SensorEntity):
     """The currently computed setpoint."""
 
     _attr_state_class = SensorStateClass.MEASUREMENT
 
-    def __init__(self, runtime: ZeitprofilRuntime) -> None:
+    def __init__(self, runtime: CurveSchedulerRuntime) -> None:
         """Initialize the sensor."""
-        super().__init__(runtime, "setpoint", "sollwert", "sensor")
+        super().__init__(runtime, "setpoint", "setpoint", "sensor")
         self._attr_native_unit_of_measurement = runtime.unit
         if runtime.unit in TEMPERATURE_UNITS:
             self._attr_device_class = SensorDeviceClass.TEMPERATURE
@@ -67,12 +67,12 @@ class SetpointSensor(ZeitprofilEntity, SensorEntity):
         }
 
 
-class ProfileSensor(ZeitprofilEntity, SensorEntity):
+class ProfileSensor(CurveSchedulerEntity, SensorEntity):
     """Name of the active profile."""
 
-    def __init__(self, runtime: ZeitprofilRuntime) -> None:
+    def __init__(self, runtime: CurveSchedulerRuntime) -> None:
         """Initialize the sensor."""
-        super().__init__(runtime, "profile", "profil", "sensor")
+        super().__init__(runtime, "profile", "profile", "sensor")
 
     @property
     def native_value(self) -> str | None:

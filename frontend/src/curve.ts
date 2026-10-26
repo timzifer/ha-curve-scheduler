@@ -1,5 +1,5 @@
 /**
- * <zeitprofil-curve>: SVG chart of one day with draggable points.
+ * <curve-scheduler-curve>: SVG chart of one day with draggable points.
  *
  * Points are rendered as 44 px HTML handles on top of the SVG so they can be
  * dragged with touch in every direction (touch-action: none) while the rest of
@@ -48,7 +48,7 @@ interface DragState {
   points: SchedulePoint[];
 }
 
-export class ZeitprofilCurve extends LitElement {
+export class CurveSchedulerCurve extends LitElement {
   static properties = {
     points: { attribute: false },
     context: { attribute: false },
@@ -97,7 +97,7 @@ export class ZeitprofilCurve extends LitElement {
     super();
     this.points = [];
     this.context = null;
-    this.mode = "kurve";
+    this.mode = "curve";
     this.min = 20;
     this.max = 70;
     this.step = 0.5;
@@ -421,7 +421,7 @@ export class ZeitprofilCurve extends LitElement {
       const value = clamp(interpolator.at(minute), this.min, this.max);
       const x = this.xFor(minute).toFixed(1);
       const y = this.yFor(value).toFixed(1);
-      if (this.mode === "stufe" && previous !== null && value !== previous) {
+      if (this.mode === "step" && previous !== null && value !== previous) {
         parts.push(`L${x},${this.yFor(previous).toFixed(1)}`);
       }
       parts.push(`${i === 0 ? "M" : "L"}${x},${y}`);
@@ -685,12 +685,12 @@ export class ZeitprofilCurve extends LitElement {
   `;
 }
 
-if (!customElements.get("zeitprofil-curve")) {
-  customElements.define("zeitprofil-curve", ZeitprofilCurve);
+if (!customElements.get("curve-scheduler-curve")) {
+  customElements.define("curve-scheduler-curve", CurveSchedulerCurve);
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "zeitprofil-curve": ZeitprofilCurve;
+    "curve-scheduler-curve": CurveSchedulerCurve;
   }
 }

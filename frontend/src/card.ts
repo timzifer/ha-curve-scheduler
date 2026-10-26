@@ -1,5 +1,5 @@
 /**
- * <zeitprofil-card>: today's plan at a glance plus the editor.
+ * <curve-scheduler-card>: today's plan at a glance plus the editor.
  */
 
 import { LitElement, css, html, nothing, type PropertyValues } from "lit";
@@ -17,9 +17,9 @@ import { addDays, profilePoints, type InstanceData } from "./model";
 import { sharedStyles } from "./styles";
 import "./curve";
 import "./editor";
-import type { ZeitprofilEditor } from "./editor";
+import type { CurveSchedulerEditor } from "./editor";
 
-export interface ZeitprofilCardConfig {
+export interface CurveSchedulerCardConfig {
   type: string;
   entry_id?: string;
   view?: "compact" | "full";
@@ -27,7 +27,7 @@ export interface ZeitprofilCardConfig {
   title?: string;
 }
 
-export class ZeitprofilCard extends LitElement {
+export class CurveSchedulerCard extends LitElement {
   static properties = {
     hass: { attribute: false },
     _config: { state: true },
@@ -40,7 +40,7 @@ export class ZeitprofilCard extends LitElement {
   };
 
   declare hass: HomeAssistant;
-  declare _config: ZeitprofilCardConfig;
+  declare _config: CurveSchedulerCardConfig;
   declare _data: InstanceData | null;
   declare _error: string | null;
   declare _editorOpen: boolean;
@@ -66,14 +66,14 @@ export class ZeitprofilCard extends LitElement {
   }
 
   static getConfigElement(): HTMLElement {
-    return document.createElement("zeitprofil-card-editor");
+    return document.createElement("curve-scheduler-card-editor");
   }
 
-  static getStubConfig(): Partial<ZeitprofilCardConfig> {
+  static getStubConfig(): Partial<CurveSchedulerCardConfig> {
     return { view: "compact", allow_edit: true };
   }
 
-  setConfig(config: ZeitprofilCardConfig): void {
+  setConfig(config: CurveSchedulerCardConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -180,8 +180,8 @@ export class ZeitprofilCard extends LitElement {
     return this._config.allow_edit !== false || this.hass?.user?.is_admin === true;
   }
 
-  private get editor(): ZeitprofilEditor | null {
-    return this.renderRoot.querySelector("zeitprofil-editor");
+  private get editor(): CurveSchedulerEditor | null {
+    return this.renderRoot.querySelector("curve-scheduler-editor");
   }
 
   private toggleEditor(): void {
@@ -289,7 +289,7 @@ export class ZeitprofilCard extends LitElement {
         <div class="headline">${parts.join(" · ")}</div>
         ${reason ? html`<div class="muted">${reason}</div>` : nothing}
       </div>
-      <zeitprofil-curve
+      <curve-scheduler-curve
         .points=${profile?.points ?? []}
         .context=${context}
         .mode=${config.interpolation}
@@ -303,7 +303,7 @@ export class ZeitprofilCard extends LitElement {
         .nowValue=${nowValue}
         .height=${170}
         .showContinuation=${false}
-      ></zeitprofil-curve>
+      ></curve-scheduler-curve>
       ${state.enabled ? nothing : html`<div class="notice warning">${this.t("today.disabled")}</div>`}
       ${state.enabled && !state.target_available
         ? html`<div class="notice warning">${this.t("today.unavailable")}</div>`
@@ -393,11 +393,11 @@ export class ZeitprofilCard extends LitElement {
       content = html`
         ${this.renderToday(this._data)}
         ${showEditor
-          ? html`<zeitprofil-editor
+          ? html`<curve-scheduler-editor
               .hass=${this.hass}
               .data=${this._data}
               .language=${this.language}
-            ></zeitprofil-editor>`
+            ></curve-scheduler-editor>`
           : nothing}
       `;
     }
@@ -454,7 +454,7 @@ export class ZeitprofilCard extends LitElement {
       .row.end {
         justify-content: flex-end;
       }
-      zeitprofil-editor {
+      curve-scheduler-editor {
         border-top: 1px solid var(--divider-color, rgba(127, 127, 127, 0.3));
         padding-top: 8px;
       }
@@ -462,12 +462,12 @@ export class ZeitprofilCard extends LitElement {
   ];
 }
 
-if (!customElements.get("zeitprofil-card")) {
-  customElements.define("zeitprofil-card", ZeitprofilCard);
+if (!customElements.get("curve-scheduler-card")) {
+  customElements.define("curve-scheduler-card", CurveSchedulerCard);
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "zeitprofil-card": ZeitprofilCard;
+    "curve-scheduler-card": CurveSchedulerCard;
   }
 }

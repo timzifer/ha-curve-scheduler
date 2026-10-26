@@ -27,13 +27,13 @@ jobs:
       - name: Ruff format
         run: ruff format --check .
       - name: Mypy
-        run: mypy custom_components/zeitprofil
+        run: mypy custom_components/curve_scheduler
       - name: Shared test vectors are up to date
         run: |
           python scripts/generate_vectors.py
           git diff --exit-code tests/vectors/
       - name: Pytest
-        run: pytest --cov=custom_components.zeitprofil --cov-report=term-missing
+        run: pytest --cov=custom_components.curve_scheduler --cov-report=term-missing
 
   frontend:
     name: Frontend (eslint, tsc, vitest, build)
@@ -58,4 +58,4 @@ jobs:
       - name: Build
         run: npm run build
       - name: Bundled card is up to date
-        run: git diff --exit-code ../custom_components/zeitprofil/frontend/zeitprofil-card.js
+        run: git diff --exit-code ../custom_components/curve_scheduler/frontend/curve-scheduler-card.js

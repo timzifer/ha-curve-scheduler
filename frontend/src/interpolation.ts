@@ -1,7 +1,7 @@
 /**
  * Interpolation of daily profiles.
  *
- * Mirror of custom_components/zeitprofil/interpolation.py. Both
+ * Mirror of custom_components/curve_scheduler/interpolation.py. Both
  * implementations are tested against tests/vectors/interpolation.json.
  * Keep the order of floating point operations identical to the Python file.
  */
@@ -11,7 +11,7 @@ export const TIMELINE_DAYS_BEFORE = 2;
 export const TIMELINE_DAYS_AFTER = 2;
 export const TIMELINE_LENGTH = TIMELINE_DAYS_BEFORE + 1 + TIMELINE_DAYS_AFTER;
 
-export const MODES = ["stufe", "linear", "weich", "kurve"] as const;
+export const MODES = ["step", "linear", "smooth", "curve"] as const;
 export type Mode = (typeof MODES)[number];
 
 /** A point as [minutes, value]. */
@@ -111,7 +111,7 @@ export class Interpolator {
     }
     this.xs = timeline.map((p) => p[0]);
     this.ys = timeline.map((p) => p[1]);
-    this.tangents = mode === "kurve" ? pchipTangents(this.xs, this.ys) : [];
+    this.tangents = mode === "curve" ? pchipTangents(this.xs, this.ys) : [];
   }
 
   at(x: number): number {
@@ -127,7 +127,7 @@ export class Interpolator {
     const x1 = xs[index + 1];
     const y0 = ys[index];
     const y1 = ys[index + 1];
-    if (this.mode === "stufe") {
+    if (this.mode === "step") {
       return y0;
     }
     const width = x1 - x0;
@@ -135,7 +135,7 @@ export class Interpolator {
     if (this.mode === "linear") {
       return y0 + (y1 - y0) * s;
     }
-    if (this.mode === "weich") {
+    if (this.mode === "smooth") {
       return y0 + (y1 - y0) * (s * s * (3.0 - 2.0 * s));
     }
     const s2 = s * s;

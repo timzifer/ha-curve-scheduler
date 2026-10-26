@@ -16,10 +16,10 @@ const base = process.env.DEMO_URL ?? "http://127.0.0.1:8765/demo/index.html";
     });
     await page.goto(`${base}?${query}`);
     await page.waitForTimeout(300);
-    const card = page.locator("zeitprofil-card");
+    const card = page.locator("curve-scheduler-card");
     if (tab !== undefined) await card.locator(".tab").nth(tab).click();
     if (select !== undefined) {
-      await card.locator("zeitprofil-editor zeitprofil-curve").locator(".handle").nth(select).click();
+      await card.locator("curve-scheduler-editor curve-scheduler-curve").locator(".handle").nth(select).click();
     }
     await page.waitForTimeout(200);
     await card.locator("ha-card").screenshot({ path: `${out}/${name}.png` });

@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "../src/editor";
-import type { ZeitprofilEditor } from "../src/editor";
-import type { ZeitprofilCurve } from "../src/curve";
+import type { CurveSchedulerEditor } from "../src/editor";
+import type { CurveSchedulerCurve } from "../src/curve";
 import { instance } from "./fixtures/instance";
 import type { HomeAssistant } from "../src/api";
 
-let editor: ZeitprofilEditor;
+let editor: CurveSchedulerEditor;
 let callWS: ReturnType<typeof vi.fn>;
 
 async function settle(): Promise<void> {
@@ -14,12 +14,12 @@ async function settle(): Promise<void> {
   await curve?.updateComplete;
 }
 
-function curveElement(): ZeitprofilCurve | null {
-  return editor.shadowRoot!.querySelector("zeitprofil-curve");
+function curveElement(): CurveSchedulerCurve | null {
+  return editor.shadowRoot!.querySelector("curve-scheduler-curve");
 }
 
 function points() {
-  return editor._draft.profiles.werktag.points;
+  return editor._draft.profiles.workday.points;
 }
 
 function rows() {
@@ -42,7 +42,7 @@ function pointer(type: string, target: Element, x: number, y: number): void {
 
 beforeEach(async () => {
   callWS = vi.fn();
-  editor = document.createElement("zeitprofil-editor");
+  editor = document.createElement("curve-scheduler-editor");
   editor.hass = { callWS, callService: vi.fn() } as unknown as HomeAssistant;
   editor.language = "de";
   editor.data = instance();
@@ -54,7 +54,7 @@ afterEach(() => {
   editor.remove();
 });
 
-describe("zeitprofil-editor: points", () => {
+describe("curve-scheduler-editor: points", () => {
   it("renders a table row and a handle per point", () => {
     expect(rows()).toHaveLength(3);
     expect(curveElement()!.shadowRoot!.querySelectorAll(".handle")).toHaveLength(3);
@@ -180,7 +180,7 @@ describe("zeitprofil-editor: points", () => {
   });
 });
 
-describe("zeitprofil-editor: saving", () => {
+describe("curve-scheduler-editor: saving", () => {
   it("sends the draft with the revision", async () => {
     callWS.mockResolvedValue({ ok: true, revision: 4 });
     editor.deletePoint(0);
@@ -188,7 +188,7 @@ describe("zeitprofil-editor: saving", () => {
     await editor.save();
     await settle();
     expect(callWS).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "zeitprofil/save", entry_id: "abc", revision: 3 }),
+      expect.objectContaining({ type: "curve_scheduler/save", entry_id: "abc", revision: 3 }),
     );
     expect(editor.dirty).toBe(false);
   });
@@ -215,7 +215,7 @@ describe("zeitprofil-editor: saving", () => {
     window.confirm = confirm;
     editor.shadowRoot!.querySelector<HTMLButtonElement>(".profile-settings button.danger")!.click();
     await settle();
-    expect(Object.keys(editor._draft.profiles)).toContain("werktag");
+    expect(Object.keys(editor._draft.profiles)).toContain("workday");
     expect(editor.shadowRoot!.textContent).toContain("noch verwendet");
     expect(confirm).not.toHaveBeenCalled();
   });
@@ -225,10 +225,10 @@ describe("zeitprofil-editor: saving", () => {
     tabs[1].click();
     await settle();
     const select = editor.shadowRoot!.querySelector<HTMLSelectElement>('select[data-day="sat"]')!;
-    select.value = "werktag";
+    select.value = "workday";
     select.dispatchEvent(new Event("change"));
     await settle();
-    expect(editor._draft.week.sat).toBe("werktag");
+    expect(editor._draft.week.sat).toBe("workday");
     expect(editor.shadowRoot!.querySelectorAll(".calendar .cell:not(.head):not(.empty)").length).toBe(
       31,
     );
@@ -244,7 +244,7 @@ describe("zeitprofil-editor: saving", () => {
     add.click();
     await settle();
     expect(editor._draft.exceptions).toEqual([
-      { from: "2026-10-29", to: "2026-11-04", profile: "frei", note: "Urlaub" },
+      { from: "2026-10-29", to: "2026-11-04", profile: "day_off", note: "Urlaub" },
     ]);
   });
 });

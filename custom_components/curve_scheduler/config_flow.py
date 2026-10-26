@@ -1,4 +1,4 @@
-"""Config and options flow for Zeitprofil."""
+"""Config and options flow for Curve Scheduler."""
 
 from __future__ import annotations
 
@@ -149,7 +149,7 @@ def clean_settings(user_input: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
-class ZeitprofilConfigFlow(ConfigFlow, domain=DOMAIN):
+class CurveSchedulerConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle the initial setup."""
 
     VERSION = 1
@@ -210,10 +210,10 @@ class ZeitprofilConfigFlow(ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
         """Return the options flow."""
-        return ZeitprofilOptionsFlow()
+        return CurveSchedulerOptionsFlow()
 
 
-class ZeitprofilOptionsFlow(OptionsFlow):
+class CurveSchedulerOptionsFlow(OptionsFlow):
     """Change settings after setup."""
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:

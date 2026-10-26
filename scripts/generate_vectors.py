@@ -15,7 +15,7 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / "custom_components" / "zeitprofil" / "interpolation.py"
+SOURCE = ROOT / "custom_components" / "curve_scheduler" / "interpolation.py"
 TARGET = ROOT / "tests" / "vectors" / "interpolation.json"
 
 # Load the module directly so Home Assistant does not need to be installed.

@@ -1,9 +1,9 @@
 /**
- * Demo page with an in-memory fake of the Zeitprofil backend.
+ * Demo page with an in-memory fake of the Curve Scheduler backend.
  * Used for development (npm run demo) and the README screenshots.
  */
 
-import "../src/zeitprofil-card";
+import "../src/curve-scheduler-card";
 import { Interpolator, buildTimeline, formatTime, roundToStep } from "../src/interpolation";
 import {
   addDays,
@@ -29,7 +29,7 @@ const holidays = new Set(["2026-10-31", "2026-11-01", "2026-12-25", "2026-12-26"
 
 let schedule: Schedule = {
   profiles: {
-    werktag: {
+    workday: {
       name: "Werktag",
       color: "#e67e22",
       points: [
@@ -43,7 +43,7 @@ let schedule: Schedule = {
         { t: "22:30", v: 45 },
       ],
     },
-    frei: {
+    day_off: {
       name: "Frei",
       color: "#27ae60",
       points: [
@@ -53,22 +53,22 @@ let schedule: Schedule = {
         { t: "23:00", v: 45 },
       ],
     },
-    urlaub: { name: "Urlaub", color: "#2980b9", points: [{ t: "12:00", v: 40 }] },
+    vacation: { name: "Urlaub", color: "#2980b9", points: [{ t: "12:00", v: 40 }] },
   },
   week: {
-    mon: "werktag",
-    tue: "werktag",
-    wed: "werktag",
-    thu: "werktag",
-    fri: "werktag",
-    sat: "frei",
-    sun: "frei",
+    mon: "workday",
+    tue: "workday",
+    wed: "workday",
+    thu: "workday",
+    fri: "workday",
+    sat: "day_off",
+    sun: "day_off",
   },
-  holiday_profile: "frei",
+  holiday_profile: "day_off",
   exceptions: [
-    { id: "a1", from: "2026-08-03", to: "2026-08-14", profile: "urlaub", note: "Sommerurlaub" },
-    { id: "b2", from: "2026-11-09", to: "2026-11-13", profile: "urlaub", note: "Herbstferien" },
-    { id: "c3", from: "2026-12-24", to: "2027-01-06", profile: "urlaub", note: "Weihnachten" },
+    { id: "a1", from: "2026-08-03", to: "2026-08-14", profile: "vacation", note: "Sommerurlaub" },
+    { id: "b2", from: "2026-11-09", to: "2026-11-13", profile: "vacation", note: "Herbstferien" },
+    { id: "c3", from: "2026-12-24", to: "2027-01-06", profile: "vacation", note: "Weihnachten" },
   ],
   auto_cleanup: false,
 };
@@ -78,7 +78,7 @@ const listeners = new Set<(data: InstanceData) => void>();
 const config = {
   target: "number.zirkulation_soll",
   interval: 5,
-  interpolation: "kurve" as const,
+  interpolation: "curve" as const,
   min: 20,
   max: 70,
   step: 0.5,
@@ -140,11 +140,11 @@ const hass = {
   locale: { language: params.get("lang") ?? "de" },
   async callWS(message: Record<string, unknown>) {
     switch (message.type) {
-      case "zeitprofil/list":
+      case "curve_scheduler/list":
         return [{ entry_id: "demo", title: "Zirkulation", config }];
-      case "zeitprofil/holidays":
+      case "curve_scheduler/holidays":
         return { configured: true, holidays: [...holidays] };
-      case "zeitprofil/save": {
+      case "curve_scheduler/save": {
         if (message.revision !== revision) {
           return { ok: false, conflict: true, revision };
         }
@@ -189,9 +189,9 @@ const hass = {
   },
 };
 
-const card = document.createElement("zeitprofil-card");
+const card = document.createElement("curve-scheduler-card");
 card.setConfig({
-  type: "custom:zeitprofil-card",
+  type: "custom:curve-scheduler-card",
   entry_id: "demo",
   view: (params.get("view") as "compact" | "full") ?? "compact",
 });

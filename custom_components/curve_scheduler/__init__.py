@@ -1,4 +1,4 @@
-"""The Zeitprofil integration: daily setpoint curves for any number entity."""
+"""The Curve Scheduler integration: daily setpoint curves for any number entity."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from homeassistant.helpers.typing import ConfigType
 
 from .const import DOMAIN
 from .frontend import async_register_frontend
-from .runtime import ZeitprofilRuntime
+from .runtime import CurveSchedulerRuntime
 from .services import async_register_services
 from .store import create_store
 from .websocket_api import async_register_websocket_api
@@ -19,7 +19,7 @@ PLATFORMS = [Platform.BUTTON, Platform.SELECT, Platform.SENSOR, Platform.SWITCH]
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
-type ZeitprofilConfigEntry = ConfigEntry[ZeitprofilRuntime]
+type CurveSchedulerConfigEntry = ConfigEntry[CurveSchedulerRuntime]
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
@@ -30,9 +30,9 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ZeitprofilConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: CurveSchedulerConfigEntry) -> bool:
     """Set up one instance."""
-    runtime = ZeitprofilRuntime(hass, entry, create_store(hass, entry.entry_id))
+    runtime = CurveSchedulerRuntime(hass, entry, create_store(hass, entry.entry_id))
     await runtime.async_load()
     entry.runtime_data = runtime
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -41,16 +41,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ZeitprofilConfigEntry) -
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ZeitprofilConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: CurveSchedulerConfigEntry) -> bool:
     """Unload an instance."""
     await entry.runtime_data.async_stop()
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
-async def async_remove_entry(hass: HomeAssistant, entry: ZeitprofilConfigEntry) -> None:
+async def async_remove_entry(hass: HomeAssistant, entry: CurveSchedulerConfigEntry) -> None:
     """Delete the stored schedule when the instance is removed."""
     await create_store(hass, entry.entry_id).async_remove()
 
 
-async def _async_update_listener(hass: HomeAssistant, entry: ZeitprofilConfigEntry) -> None:
+async def _async_update_listener(hass: HomeAssistant, entry: CurveSchedulerConfigEntry) -> None:
     await hass.config_entries.async_reload(entry.entry_id)

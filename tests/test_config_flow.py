@@ -7,7 +7,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 import voluptuous as vol
 
-from custom_components.zeitprofil.const import (
+from custom_components.curve_scheduler.const import (
     CONF_HOLIDAY_SOURCE,
     CONF_INTERPOLATION,
     CONF_INTERVAL,
@@ -24,7 +24,7 @@ from .conftest import make_entry, setup_entry
 
 SETTINGS = {
     CONF_INTERVAL: 5,
-    CONF_INTERPOLATION: "kurve",
+    CONF_INTERPOLATION: "curve",
     CONF_MIN: 20,
     CONF_MAX: 70,
     CONF_STEP: 0.5,
@@ -61,8 +61,8 @@ async def test_full_flow(hass: HomeAssistant, target: str) -> None:
     await hass.async_block_till_done()
 
     # Example profiles were created and the entities exist.
-    assert hass.states.get("sensor.zirkulation_sollwert") is not None
-    assert hass.states.get("select.zirkulation_modus").attributes["options"] == [
+    assert hass.states.get("sensor.zirkulation_setpoint") is not None
+    assert hass.states.get("select.zirkulation_mode").attributes["options"] == [
         "auto",
         "Workday",
         "Day off",

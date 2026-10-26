@@ -1,4 +1,4 @@
-"""Actions (services) to control Zeitprofil from automations."""
+"""Actions (services) to control Curve Scheduler from automations."""
 
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ from .const import (
 from .model import ScheduleValidationError
 
 if TYPE_CHECKING:
-    from .runtime import ZeitprofilRuntime
+    from .runtime import CurveSchedulerRuntime
 
 ENTRY_SCHEMA = vol.Schema({vol.Required(ATTR_CONFIG_ENTRY_ID): cv.string})
 
@@ -61,7 +61,7 @@ REMOVE_EXCEPTION_SCHEMA = vol.All(
 )
 
 
-def get_runtime(hass: HomeAssistant, entry_id: str) -> ZeitprofilRuntime:
+def get_runtime(hass: HomeAssistant, entry_id: str) -> CurveSchedulerRuntime:
     """Return the runtime of a loaded config entry or raise."""
     entry = hass.config_entries.async_get_entry(entry_id)
     if entry is None or entry.domain != DOMAIN or entry.state is not ConfigEntryState.LOADED:
@@ -70,11 +70,11 @@ def get_runtime(hass: HomeAssistant, entry_id: str) -> ZeitprofilRuntime:
             translation_key="entry_not_found",
             translation_placeholders={"entry_id": entry_id},
         )
-    runtime: ZeitprofilRuntime = entry.runtime_data
+    runtime: CurveSchedulerRuntime = entry.runtime_data
     return runtime
 
 
-def _profile(runtime: ZeitprofilRuntime, value: str) -> str:
+def _profile(runtime: CurveSchedulerRuntime, value: str) -> str:
     profile_id = runtime.find_profile(value)
     if profile_id is None:
         raise ServiceValidationError(
