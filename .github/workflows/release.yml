@@ -33,6 +33,6 @@ jobs:
         working-directory: custom_components/zeitprofil
         run: zip -r ../../zeitprofil.zip . -x "__pycache__/*" "*/__pycache__/*"
       - name: Attach to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: zeitprofil.zip
