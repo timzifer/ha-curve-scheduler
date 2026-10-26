@@ -1,0 +1,199 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Neues Zeitprofil",
+        "description": "Ein Zeitprofil berechnet einen Wert, der sich über den Tag ändert (zum Beispiel eine Warmwasser-Temperatur), und schreibt ihn regelmäßig in ein Gerät.",
+        "data": {
+          "name": "Name",
+          "target_entity": "Ziel"
+        },
+        "data_description": {
+          "name": "Zum Beispiel „Zirkulation“.",
+          "target_entity": "Die Zahl, der Zahlen-Helfer, das Thermostat oder der Warmwasserbereiter, der den Wert erhält."
+        }
+      },
+      "settings": {
+        "title": "Einstellungen für {name}",
+        "data": {
+          "interval": "Schreibintervall",
+          "interpolation": "Übergang zwischen Punkten",
+          "min_value": "Minimum",
+          "max_value": "Maximum",
+          "step": "Schrittweite",
+          "unit": "Einheit",
+          "holiday_source": "Feiertagsquelle",
+          "write_threshold": "Schreib-Schwelle"
+        },
+        "data_description": {
+          "interval": "Wie oft der Wert geschrieben wird (Minuten).",
+          "interpolation": "Wie sich der Wert zwischen zwei Punkten ändert.",
+          "min_value": "Kleinster erlaubter Wert. Gleichzeitig der untere Rand des Diagramms.",
+          "max_value": "Größter erlaubter Wert. Gleichzeitig der obere Rand des Diagramms.",
+          "step": "Vor dem Schreiben wird auf diese Schrittweite gerundet, z. B. 0,5.",
+          "unit": "Wird in der Karte angezeigt, z. B. °C.",
+          "holiday_source": "Optional: ein Arbeitstag-Binärsensor (Workday) oder ein Kalender (jedes Ereignis = freier Tag).",
+          "write_threshold": "Nur schreiben, wenn sich der Wert um mindestens diesen Betrag geändert hat (0 = bei jeder Änderung)."
+        }
+      }
+    },
+    "error": {
+      "name_required": "Bitte einen Namen eingeben.",
+      "max_not_greater": "Das Maximum muss größer als das Minimum sein.",
+      "step_positive": "Die Schrittweite muss größer als 0 sein.",
+      "threshold_negative": "Die Schwelle darf nicht negativ sein."
+    },
+    "abort": {
+      "already_configured": "Für dieses Ziel gibt es bereits ein Zeitprofil."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Einstellungen",
+        "data": {
+          "target_entity": "Ziel",
+          "interval": "Schreibintervall",
+          "interpolation": "Übergang zwischen Punkten",
+          "min_value": "Minimum",
+          "max_value": "Maximum",
+          "step": "Schrittweite",
+          "unit": "Einheit",
+          "holiday_source": "Feiertagsquelle",
+          "write_threshold": "Schreib-Schwelle"
+        },
+        "data_description": {
+          "target_entity": "Die Zahl, der Zahlen-Helfer, das Thermostat oder der Warmwasserbereiter, der den Wert erhält.",
+          "interval": "Wie oft der Wert geschrieben wird (Minuten).",
+          "interpolation": "Wie sich der Wert zwischen zwei Punkten ändert.",
+          "min_value": "Kleinster erlaubter Wert. Gleichzeitig der untere Rand des Diagramms.",
+          "max_value": "Größter erlaubter Wert. Gleichzeitig der obere Rand des Diagramms.",
+          "step": "Vor dem Schreiben wird auf diese Schrittweite gerundet, z. B. 0,5.",
+          "unit": "Wird in der Karte angezeigt, z. B. °C.",
+          "holiday_source": "Optional: ein Arbeitstag-Binärsensor (Workday) oder ein Kalender (jedes Ereignis = freier Tag).",
+          "write_threshold": "Nur schreiben, wenn sich der Wert um mindestens diesen Betrag geändert hat (0 = bei jeder Änderung)."
+        }
+      }
+    },
+    "error": {
+      "max_not_greater": "Das Maximum muss größer als das Minimum sein.",
+      "step_positive": "Die Schrittweite muss größer als 0 sein.",
+      "threshold_negative": "Die Schwelle darf nicht negativ sein.",
+      "target_in_use": "Für dieses Ziel gibt es bereits ein anderes Zeitprofil."
+    }
+  },
+  "selector": {
+    "interpolation": {
+      "options": {
+        "stufe": "Stufe (Sprung an jedem Punkt)",
+        "linear": "Linear (gerade Linien)",
+        "weich": "Weich (sanfter Anfang und sanftes Ende)",
+        "kurve": "Kurve (glatt, ohne Überschwingen)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "setpoint": {
+        "name": "Sollwert",
+        "state_attributes": {
+          "profile": { "name": "Profil" },
+          "profile_id": { "name": "Profil-ID" },
+          "reason": {
+            "name": "Grund",
+            "state": {
+              "weekday": "Wochentag",
+              "holiday": "Feiertag",
+              "exception": "Ausnahme",
+              "override": "Manuell"
+            }
+          },
+          "next_point_time": { "name": "Nächster Punkt" },
+          "next_point_value": { "name": "Wert am nächsten Punkt" },
+          "value_in_1h": { "name": "Wert in 1 Stunde" },
+          "raw_value": { "name": "Ungerundeter Wert" },
+          "enabled": { "name": "Aktiv" }
+        }
+      },
+      "profile": {
+        "name": "Profil",
+        "state_attributes": {
+          "profile_id": { "name": "Profil-ID" },
+          "reason": {
+            "name": "Grund",
+            "state": {
+              "weekday": "Wochentag",
+              "holiday": "Feiertag",
+              "exception": "Ausnahme",
+              "override": "Manuell"
+            }
+          }
+        }
+      }
+    },
+    "switch": {
+      "active": { "name": "Aktiv" }
+    },
+    "select": {
+      "mode": {
+        "name": "Modus",
+        "state": { "auto": "Automatik" }
+      }
+    },
+    "button": {
+      "apply_now": { "name": "Jetzt anwenden" }
+    }
+  },
+  "exceptions": {
+    "entry_not_found": { "message": "Das Zeitprofil {entry_id} wurde nicht gefunden oder ist nicht geladen." },
+    "unknown_profile": { "message": "Es gibt kein Profil mit dem Namen „{profile}“." },
+    "until_in_past": { "message": "Das Ende muss in der Zukunft liegen." },
+    "date_range_reversed": { "message": "Das Enddatum darf nicht vor dem Startdatum liegen." },
+    "invalid_schedule": { "message": "Der Plan ist ungültig ({problem})." }
+  },
+  "services": {
+    "set_override": {
+      "name": "Profil manuell festlegen",
+      "description": "Ein Profil unabhängig vom Wochenplan verwenden, optional bis zu einem Zeitpunkt.",
+      "fields": {
+        "config_entry_id": { "name": "Zeitprofil", "description": "Die Zeitprofil-Instanz." },
+        "profile": { "name": "Profil", "description": "Name des Profils." },
+        "until": { "name": "Bis", "description": "Wann wieder auf Automatik gewechselt wird. Leer lassen, damit das Profil bis zum manuellen Zurücksetzen gilt." }
+      }
+    },
+    "clear_override": {
+      "name": "Zurück zur Automatik",
+      "description": "Manuelles Profil beenden und wieder dem Wochenplan folgen.",
+      "fields": {
+        "config_entry_id": { "name": "Zeitprofil", "description": "Die Zeitprofil-Instanz." }
+      }
+    },
+    "add_exception": {
+      "name": "Ausnahme eintragen",
+      "description": "Für einen Zeitraum ein bestimmtes Profil verwenden, zum Beispiel im Urlaub.",
+      "fields": {
+        "config_entry_id": { "name": "Zeitprofil", "description": "Die Zeitprofil-Instanz." },
+        "from": { "name": "Von", "description": "Erster Tag." },
+        "to": { "name": "Bis", "description": "Letzter Tag (einschließlich). Standard: der erste Tag." },
+        "profile": { "name": "Profil", "description": "Name des Profils." },
+        "note": { "name": "Notiz", "description": "Optionale Notiz, z. B. „Sommerurlaub“." }
+      }
+    },
+    "remove_exception": {
+      "name": "Ausnahme entfernen",
+      "description": "Eine Ausnahme über ihre ID oder alle Ausnahmen an einem Datum entfernen.",
+      "fields": {
+        "config_entry_id": { "name": "Zeitprofil", "description": "Die Zeitprofil-Instanz." },
+        "exception_id": { "name": "Ausnahme-ID", "description": "Die ID, die „Ausnahme eintragen“ zurückgibt." },
+        "date": { "name": "Datum", "description": "Alle Ausnahmen entfernen, die diesen Tag enthalten." }
+      }
+    },
+    "apply_now": {
+      "name": "Jetzt anwenden",
+      "description": "Den aktuellen Wert sofort berechnen und schreiben.",
+      "fields": {
+        "config_entry_id": { "name": "Zeitprofil", "description": "Die Zeitprofil-Instanz." }
+      }
+    }
+  }
+}

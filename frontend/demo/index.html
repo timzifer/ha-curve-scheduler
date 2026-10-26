@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zeitprofil card demo</title>
+    <style>
+      :root {
+        --primary-color: #03a9f4;
+        --text-primary-color: #fff;
+        --primary-text-color: #212121;
+        --secondary-text-color: #727272;
+        --divider-color: rgba(0, 0, 0, 0.12);
+        --card-background-color: #fff;
+        --error-color: #db4437;
+        --lovelace-background: #f5f5f5;
+      }
+      :root.dark {
+        --primary-text-color: #e1e1e1;
+        --secondary-text-color: #9b9b9b;
+        --divider-color: rgba(225, 225, 225, 0.12);
+        --card-background-color: #1c1c1c;
+        --lovelace-background: #111;
+      }
+      body {
+        margin: 0;
+        padding: 16px;
+        background: var(--lovelace-background);
+        font-family: Roboto, "Segoe UI", system-ui, sans-serif;
+      }
+      #root {
+        max-width: 560px;
+        margin: 0 auto;
+      }
+      ha-card {
+        background: var(--card-background-color);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        color: var(--primary-text-color);
+      }
+    </style>
+    <script>
+      if (new URLSearchParams(location.search).get("theme") === "dark") {
+        document.documentElement.classList.add("dark");
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./demo.js"></script>
+  </body>
+</html>

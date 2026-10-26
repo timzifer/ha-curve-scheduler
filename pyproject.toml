@@ -1,0 +1,41 @@
+[project]
+name = "zeitprofil"
+version = "0.1.0"
+description = "Home Assistant integration: daily setpoint curves with a visual editor card"
+requires-python = ">=3.13"
+license = "MIT"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "D", "PL", "ASYNC"]
+ignore = ["D203", "D213", "PLR0913", "PLR0912", "PLR0915", "PLR2004", "PLR0911"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D", "PLR2004", "PLC0415"]
+"scripts/**" = ["D", "PLW0603", "SIM115", "ASYNC230"]
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+known-first-party = ["custom_components"]
+known-third-party = ["homeassistant"]
+combine-as-imports = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+ignore_missing_imports = true
+explicit_package_bases = true
+warn_unused_ignores = false
+implicit_reexport = true
+disallow_subclassing_any = false
+disallow_untyped_decorators = false
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

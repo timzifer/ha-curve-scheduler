@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Start a local Home Assistant with this integration (http://localhost:8123).
+set -euo pipefail
+cd "$(dirname "$0")/.."
+mkdir -p config
+export PYTHONPATH="${PWD}:${PYTHONPATH:-}"
+# Home Assistant loads custom_components from the config directory.
+ln -sfn "${PWD}/custom_components" config/custom_components
+exec hass --config "${PWD}/config" --debug

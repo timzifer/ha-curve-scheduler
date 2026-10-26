@@ -218,3 +218,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Frontend
+node_modules/
+frontend/coverage/
+frontend/demo/demo.js
+
+# Home Assistant dev config
+config/*
+!config/configuration.yaml
