@@ -1,0 +1,27 @@
+{
+  "entity": {
+    "sensor": {
+      "setpoint": { "default": "mdi:chart-bell-curve-cumulative" },
+      "profile": { "default": "mdi:calendar-clock" }
+    },
+    "switch": {
+      "active": {
+        "default": "mdi:calendar-sync",
+        "state": { "off": "mdi:calendar-remove" }
+      }
+    },
+    "select": {
+      "mode": { "default": "mdi:format-list-bulleted-type" }
+    },
+    "button": {
+      "apply_now": { "default": "mdi:send-clock" }
+    }
+  },
+  "services": {
+    "set_override": { "service": "mdi:hand-back-right" },
+    "clear_override": { "service": "mdi:autorenew" },
+    "add_exception": { "service": "mdi:calendar-plus" },
+    "remove_exception": { "service": "mdi:calendar-minus" },
+    "apply_now": { "service": "mdi:send-clock" }
+  }
+}

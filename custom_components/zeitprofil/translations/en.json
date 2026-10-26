@@ -1,0 +1,199 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "New time profile",
+        "description": "A time profile calculates a value that changes over the day (for example a hot water temperature) and writes it to a device regularly.",
+        "data": {
+          "name": "Name",
+          "target_entity": "Target"
+        },
+        "data_description": {
+          "name": "For example \"Circulation\".",
+          "target_entity": "The number, input number, thermostat or water heater that receives the value."
+        }
+      },
+      "settings": {
+        "title": "Settings for {name}",
+        "data": {
+          "interval": "Write interval",
+          "interpolation": "Transition between points",
+          "min_value": "Minimum",
+          "max_value": "Maximum",
+          "step": "Rounding step",
+          "unit": "Unit",
+          "holiday_source": "Holiday source",
+          "write_threshold": "Write threshold"
+        },
+        "data_description": {
+          "interval": "How often the value is written (minutes).",
+          "interpolation": "How the value changes between two points.",
+          "min_value": "Lowest allowed value. Also the bottom of the chart.",
+          "max_value": "Highest allowed value. Also the top of the chart.",
+          "step": "The value is rounded to this step before writing, e.g. 0.5.",
+          "unit": "Shown in the card, e.g. °C.",
+          "holiday_source": "Optional: a Workday binary sensor or a calendar (every event is a day off).",
+          "write_threshold": "Only write when the value changed by at least this amount (0 = on every change)."
+        }
+      }
+    },
+    "error": {
+      "name_required": "Please enter a name.",
+      "max_not_greater": "The maximum must be greater than the minimum.",
+      "step_positive": "The rounding step must be greater than 0.",
+      "threshold_negative": "The threshold must not be negative."
+    },
+    "abort": {
+      "already_configured": "This target already has a time profile."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Settings",
+        "data": {
+          "target_entity": "Target",
+          "interval": "Write interval",
+          "interpolation": "Transition between points",
+          "min_value": "Minimum",
+          "max_value": "Maximum",
+          "step": "Rounding step",
+          "unit": "Unit",
+          "holiday_source": "Holiday source",
+          "write_threshold": "Write threshold"
+        },
+        "data_description": {
+          "target_entity": "The number, input number, thermostat or water heater that receives the value.",
+          "interval": "How often the value is written (minutes).",
+          "interpolation": "How the value changes between two points.",
+          "min_value": "Lowest allowed value. Also the bottom of the chart.",
+          "max_value": "Highest allowed value. Also the top of the chart.",
+          "step": "The value is rounded to this step before writing, e.g. 0.5.",
+          "unit": "Shown in the card, e.g. °C.",
+          "holiday_source": "Optional: a Workday binary sensor or a calendar (every event is a day off).",
+          "write_threshold": "Only write when the value changed by at least this amount (0 = on every change)."
+        }
+      }
+    },
+    "error": {
+      "max_not_greater": "The maximum must be greater than the minimum.",
+      "step_positive": "The rounding step must be greater than 0.",
+      "threshold_negative": "The threshold must not be negative.",
+      "target_in_use": "This target already has another time profile."
+    }
+  },
+  "selector": {
+    "interpolation": {
+      "options": {
+        "stufe": "Steps (jump at each point)",
+        "linear": "Linear (straight lines)",
+        "weich": "Smooth (soft start and end)",
+        "kurve": "Curve (smooth, never overshoots)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "setpoint": {
+        "name": "Setpoint",
+        "state_attributes": {
+          "profile": { "name": "Profile" },
+          "profile_id": { "name": "Profile ID" },
+          "reason": {
+            "name": "Reason",
+            "state": {
+              "weekday": "Weekday",
+              "holiday": "Holiday",
+              "exception": "Exception",
+              "override": "Manual"
+            }
+          },
+          "next_point_time": { "name": "Next point" },
+          "next_point_value": { "name": "Next point value" },
+          "value_in_1h": { "name": "Value in 1 hour" },
+          "raw_value": { "name": "Unrounded value" },
+          "enabled": { "name": "Active" }
+        }
+      },
+      "profile": {
+        "name": "Profile",
+        "state_attributes": {
+          "profile_id": { "name": "Profile ID" },
+          "reason": {
+            "name": "Reason",
+            "state": {
+              "weekday": "Weekday",
+              "holiday": "Holiday",
+              "exception": "Exception",
+              "override": "Manual"
+            }
+          }
+        }
+      }
+    },
+    "switch": {
+      "active": { "name": "Active" }
+    },
+    "select": {
+      "mode": {
+        "name": "Mode",
+        "state": { "auto": "Automatic" }
+      }
+    },
+    "button": {
+      "apply_now": { "name": "Apply now" }
+    }
+  },
+  "exceptions": {
+    "entry_not_found": { "message": "Time profile instance {entry_id} was not found or is not loaded." },
+    "unknown_profile": { "message": "There is no profile named \"{profile}\"." },
+    "until_in_past": { "message": "The end time must be in the future." },
+    "date_range_reversed": { "message": "The end date must not be before the start date." },
+    "invalid_schedule": { "message": "The schedule is invalid ({problem})." }
+  },
+  "services": {
+    "set_override": {
+      "name": "Set manual profile",
+      "description": "Use one profile regardless of the weekly plan, optionally until a point in time.",
+      "fields": {
+        "config_entry_id": { "name": "Time profile", "description": "The time profile instance." },
+        "profile": { "name": "Profile", "description": "Name of the profile." },
+        "until": { "name": "Until", "description": "When to return to automatic mode. Leave empty to keep the profile until it is reset." }
+      }
+    },
+    "clear_override": {
+      "name": "Back to automatic",
+      "description": "End a manual profile and follow the weekly plan again.",
+      "fields": {
+        "config_entry_id": { "name": "Time profile", "description": "The time profile instance." }
+      }
+    },
+    "add_exception": {
+      "name": "Add exception",
+      "description": "Use a profile for a date range, for example a holiday.",
+      "fields": {
+        "config_entry_id": { "name": "Time profile", "description": "The time profile instance." },
+        "from": { "name": "From", "description": "First day." },
+        "to": { "name": "To", "description": "Last day (inclusive). Defaults to the first day." },
+        "profile": { "name": "Profile", "description": "Name of the profile." },
+        "note": { "name": "Note", "description": "Optional note, e.g. \"Summer holiday\"." }
+      }
+    },
+    "remove_exception": {
+      "name": "Remove exception",
+      "description": "Remove an exception by its ID or all exceptions covering a date.",
+      "fields": {
+        "config_entry_id": { "name": "Time profile", "description": "The time profile instance." },
+        "exception_id": { "name": "Exception ID", "description": "ID returned by add exception." },
+        "date": { "name": "Date", "description": "Remove all exceptions that include this day." }
+      }
+    },
+    "apply_now": {
+      "name": "Apply now",
+      "description": "Calculate and write the current value immediately.",
+      "fields": {
+        "config_entry_id": { "name": "Time profile", "description": "The time profile instance." }
+      }
+    }
+  }
+}

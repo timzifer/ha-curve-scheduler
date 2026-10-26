@@ -1,0 +1,74 @@
+set_override:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: zeitprofil
+    profile:
+      required: true
+      example: Urlaub
+      selector:
+        text:
+    until:
+      required: false
+      selector:
+        datetime:
+
+clear_override:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: zeitprofil
+
+add_exception:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: zeitprofil
+    from:
+      required: true
+      selector:
+        date:
+    to:
+      required: false
+      selector:
+        date:
+    profile:
+      required: true
+      example: Urlaub
+      selector:
+        text:
+    note:
+      required: false
+      example: Sommerurlaub
+      selector:
+        text:
+
+remove_exception:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: zeitprofil
+    exception_id:
+      required: false
+      selector:
+        text:
+    date:
+      required: false
+      selector:
+        date:
+
+apply_now:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: zeitprofil
