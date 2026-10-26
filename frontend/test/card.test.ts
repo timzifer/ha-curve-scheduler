@@ -53,7 +53,7 @@ describe("zeitprofil-card", () => {
   it("shows today's summary", async () => {
     const { card } = await mount({});
     const text = card.shadowRoot!.querySelector(".headline")!.textContent;
-    expect(text).toBe("Heute: Werktag · jetzt 60 °C · ab 18:00 → 45 °C");
+    expect(text).toBe("Heute: Werktag · jetzt 60\u00a0°C · ab 18:00 → 45\u00a0°C");
     expect(card.shadowRoot!.querySelector("zeitprofil-curve")).not.toBeNull();
     expect(card.shadowRoot!.querySelector("zeitprofil-editor")).toBeNull();
   });

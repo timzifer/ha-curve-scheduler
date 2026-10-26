@@ -1,0 +1,23 @@
+# Development configuration (scripts/develop).
+default_config:
+
+logger:
+  default: info
+  logs:
+    custom_components.zeitprofil: debug
+
+# Demo targets to try the integration without real hardware.
+input_number:
+  zirkulation_soll:
+    name: Zirkulation Soll
+    min: 20
+    max: 70
+    step: 0.5
+    unit_of_measurement: "°C"
+    mode: box
+  puffer_soll:
+    name: Puffer Soll
+    min: 30
+    max: 80
+    step: 1
+    unit_of_measurement: "°C"

@@ -15,7 +15,7 @@ ignore = ["D203", "D213", "PLR0913", "PLR0912", "PLR0915", "PLR2004", "PLR0911"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["D", "PLR2004", "PLC0415"]
-"scripts/**" = ["D", "PLW0603"]
+"scripts/**" = ["D", "PLW0603", "SIM115", "ASYNC230"]
 
 [tool.ruff.lint.isort]
 force-sort-within-sections = true

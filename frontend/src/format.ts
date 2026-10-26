@@ -24,7 +24,7 @@ export function formatValue(
   language: string,
 ): string {
   const number = formatNumber(value, step, language);
-  return unit ? `${number} ${unit}` : number;
+  return unit ? `${number}\u00a0${unit}` : number;
 }
 
 /** Parse user input that may use a decimal comma. */
